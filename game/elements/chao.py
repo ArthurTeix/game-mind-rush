@@ -27,9 +27,9 @@ class Chao:
 
 class GerenciadorChao:
     def __init__(self, largura_tela, altura_tela, velocidade,
-                altura_minima=40, altura_maxima=90,
-                largura_minima=80, largura_maxima=200,
-                espaco_minimo=0, espaco_maximo=150):
+                altura_minima=400, altura_maxima=500,
+                largura_minima=400, largura_maxima=500,
+                espaco_minimo=50, espaco_maximo=150):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.velocidade = velocidade
@@ -43,13 +43,23 @@ class GerenciadorChao:
 
         self.lista_chaos = []
 
-        # preenche a tela inteira com blocos de chão antes do jogo começar,
-        # para não iniciar com uma tela vazia
-        x = 0
+        # o primeiro bloco é fixo e previsível (não sorteado), para
+        # garantir uma "zona segura" onde o personagem nasce em pé
+        primeiro_chao = self.criar_chao_fixo(x=0, largura=350, altura=self.altura_maxima)
+        self.altura_do_chao_inicial = primeiro_chao.rect.height
+
+        # preenche o resto da tela com blocos sorteados normalmente
+        x = primeiro_chao.rect.right + randint(self.espaco_minimo, self.espaco_maximo)
         while x < self.largura_tela:
             novo_chao = self.criar_chao(x)
             espaco = randint(self.espaco_minimo, self.espaco_maximo)
             x = novo_chao.rect.right + espaco
+
+    def criar_chao_fixo(self, x, largura, altura):
+        y = self.altura_tela - altura
+        novo_chao = Chao(x, y, largura, altura, self.velocidade)
+        self.lista_chaos.append(novo_chao)
+        return novo_chao
 
     def criar_chao(self, x):
         # sorteia o tamanho deste bloco especificamente
@@ -70,18 +80,23 @@ class GerenciadorChao:
         for chao in self.lista_chaos:
             chao.mover()
 
-        # passo 2: separa apenas os blocos que ainda estão visíveis na tela
+        # passo 2: separa os blocos que ainda estão visíveis,
+        # e conta quantos saíram (usado para pontuação)
         chaos_visiveis = []
+        quantidade_removida = 0
+
         for chao in self.lista_chaos:
             if not chao.saiu_da_tela():
                 chaos_visiveis.append(chao)
+            else:
+                quantidade_removida += 1
 
         self.lista_chaos = chaos_visiveis
 
         # passo 3: se não sobrou nenhum bloco, cria um novo do zero
         if len(self.lista_chaos) == 0:
             self.criar_chao(self.largura_tela)
-            return
+            return quantidade_removida
 
         # passo 4: se o último bloco já apareceu por completo na tela,
         # cria o próximo bloco depois dele, com um espaço aleatório
@@ -91,6 +106,8 @@ class GerenciadorChao:
             espaco = randint(self.espaco_minimo, self.espaco_maximo)
             proximo_x = ultimo_chao.rect.right + espaco
             self.criar_chao(proximo_x)
+
+        return quantidade_removida
 
     def desenhar(self, tela):
         for chao in self.lista_chaos:
