@@ -10,16 +10,16 @@ class Personagem:
 
         self.rect = pygame.Rect(x, y, largura, altura)
 
-        #  física vertical
+        # --- física vertical ---
         self.velocidade_y = 0
-        self.gravidade = 2
-        self.forca_salto = -2
+        self.gravidade = 0.6
+        self.forca_salto = -16
 
-        # controle de estado
+        # --- controle de estado ---
         self.no_chao = False
         self.vivo = True
 
-        # animação (corrida)
+        # --- animação (corrida) ---
         self.imagens = []
         for caminho in caminhos_imagens:
             imagem = pygame.image.load(caminho).convert_alpha()
@@ -40,19 +40,21 @@ class Personagem:
         self.rect.y += self.velocidade_y
 
     def verificar_colisao_com_chao(self, lista_de_chaos):
-        self.no_chao = False  # assume que não está no chão, até provar o contrário
+        self.no_chao = False
 
         for chao in lista_de_chaos:
-            if self.rect.colliderect(chao.rect) and self.velocidade_y > 0:
-                self.rect.bottom = chao.rect.top  # encaixa em cima do chão
-                self.velocidade_y = 0
-                self.no_chao = True
+            if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
+                # posição que o personagem tinha ANTES de mover neste frame
+                bottom_anterior = self.rect.bottom - self.velocidade_y
+
+                # só conta como "pousar em cima" se ele estava acima do
+                # topo do bloco no frame passado (10px de tolerância)
+                if bottom_anterior <= chao.rect.top + 10:
+                    self.rect.bottom = chao.rect.top
+                    self.velocidade_y = 0
+                    self.no_chao = True
 
     def verificar_queda_fatal(self):
-        """
-        TODO:
-        - se rect.y passar da altura da tela: vivo = False
-        """
         if self.rect.y > self.altura_tela:
             self.vivo = False
 
