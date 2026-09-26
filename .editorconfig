@@ -1,0 +1,12 @@
+# EditorConfig ajuda a manter um estilo de código consistente
+
+root = true
+
+# Padrão para todos os arquivos
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
