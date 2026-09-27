@@ -6,7 +6,8 @@ from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREE
 from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
 from game.render import desenhar_menu, desenhar_jogo
-
+from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair
+from game.ui.logo import logo_menu
 
 class Motor:
     def __init__(self):
@@ -72,9 +73,11 @@ class Motor:
                     self.personagem.pular()
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
-                if self.estado == "menu":
-                    # placeholder: até termos os botões (jogar, ranking, perfil, sair)
+                if self.estado == "menu" and botao_jogar.clicado(evento.pos):
                     self.estado = "jogar"
+
+                elif self.estado == "menu" and botao_sair.clicado(evento.pos):
+                    self.rodando = False
 
     def atualizar_jogo(self):
         chaos_removidos = self.gerenciador_chao.atualizar()
