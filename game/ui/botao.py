@@ -45,6 +45,8 @@ botao_modos = Botao("./img/botoes/MODOSMR.png")
 botao_config = Botao("./img/botoes/CONFIGMR.png")
 botao_ranking = Botao("./img/botoes/RANKINGMR.png")
 botao_sair = Botao("./img/botoes/SAIRMR.png")
+botao_reiniciar = Botao("./img/botoes/REINICIARMR.png")
+botao_sair_gameover = Botao("./img/botoes/SAIRMR.png")
 
 # posiciona os botões do menu centralizado
 Y_BOTOES_MENU = int(ALTURA_TELA * 0.85)
@@ -53,8 +55,9 @@ centralizar_em_linha(
     y=Y_BOTOES_MENU
 )
 
-# botão de reiniciar (tela de game over) fica centralizado sozinho por qnquanto que não adicionam os outros
-botao_reiniciar = Botao(
-    "./img/botoes/REINICIARMR.png",
-    centro=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.85))
+# posiciona os botões do game over centralizado
+Y_BOTOES_GAMEOVER = int(ALTURA_TELA * 0.85)
+centralizar_em_linha(
+    [botao_reiniciar, botao_sair_gameover],
+    y=Y_BOTOES_GAMEOVER
 )

@@ -4,7 +4,7 @@ import pygame
 from game.util.cores import cores
 from game.ui.logo import logo_menu
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS
-from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar
+from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover
 
 
 def desenhar_menu(tela):
@@ -39,5 +39,6 @@ def desenhar_gameover(tela, imagem_gameover):
     tela.blit(imagem_gameover, rect_imagem)
 
     botao_reiniciar.desenhar(tela)
+    botao_sair_gameover.desenhar(tela)
 
     pygame.display.update()
