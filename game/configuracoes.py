@@ -3,9 +3,7 @@ import pygame
 pygame.init()
 pygame.font.init()
 
-# --- Configuração de tela ---
-# Deixe False durante o desenvolvimento para testar em janela
-# (fullscreen trava o foco do mouse/teclado e dificulta o debug).
+# --- Configurações de tela ---
 FULLSCREEN = True
 
 info_tela = pygame.display.Info()
