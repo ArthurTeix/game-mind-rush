@@ -22,6 +22,6 @@ class Botao:
 
 botao_jogar = Botao("./img/botoes/JOGARMR.png", centro=(60, 840))
 botao_modos = Botao("./img/botoes/MODOSMR.png", centro=(424, 840))
-botao_config = Botao("./img/botoes/CONFIGMR", centro=(788, 840))
+botao_config = Botao("./img/botoes/CONFIGMR.png", centro=(788, 840))
 botao_ranking = Botao("./img/botoes/RANKINGMR.png", centro=(1152, 840))
 botao_sair = Botao("./img/botoes/SAIRMR.png", centro=(1516, 840))
