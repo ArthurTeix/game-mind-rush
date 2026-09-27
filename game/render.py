@@ -21,12 +21,12 @@ def desenhar_menu(tela):
 
 
 def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
-    tela.fill(cores['azul-ceu'])
+    tela.fill(cores['cinza-menu'])
 
     gerenciador_chao.desenhar(tela)
     personagem.desenhar(tela)
 
-    texto_pontos = FONTE_PONTOS.render(f"Pontuação: {pontos}", True, cores['amarelo'])
+    texto_pontos = FONTE_PONTOS.render(f"Pontuação: {pontos}", True, cores['rosa'])
     tela.blit(texto_pontos, (20, 20))
 
     pygame.display.update()

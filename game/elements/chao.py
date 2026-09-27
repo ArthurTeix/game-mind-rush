@@ -9,7 +9,7 @@ class Chao:
         self.velocidade = velocidade
 
         self.imagem = pygame.Surface((largura, altura))
-        self.imagem.fill(cores['verde'])
+        self.imagem.fill(cores['rosa'])
 
         # APENAS QUANDO TIVER IMG
         # self.imagem = pygame.image.load('./img/elementos/chao.png').convert_alpha()

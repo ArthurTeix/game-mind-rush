@@ -6,5 +6,6 @@ cores = {
     'cinza-menu': (30, 30, 30),
     'preto': (0, 0, 0),
     'verde': (0, 255, 0),
-    'vermelho': (255, 0, 0)
+    'vermelho': (255, 0, 0),
+    'rosa' : (255, 105, 180)
 }
