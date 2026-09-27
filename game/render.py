@@ -1,25 +1,17 @@
 # Arquivo responsável por desenhar e renderizar as telas do jogo
 
 import pygame
-
+from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS
 
 
 def desenhar_menu(tela):
     tela.fill((30, 30, 30))
-
-    texto = FONTE_TITULO.render("Mind Rush", True, (255, 255, 255))
-    tela.blit(
-        texto,
-        (500, 300)
-    )
-
-    dica = FONTE_PONTOS.render("Clique para jogar | ESPAÇO para pular | ESC para sair", True, (200, 200, 200))
-    tela.blit(
-        dica,
-        (150, 600)
-    )
-
+    botao_jogar.desenhar(tela)
+    botao_modos.desenhar(tela)
+    botao_config.desenhar(tela)
+    botao_ranking.desenhar(tela)
+    botao_sair.desenhar(tela)
     pygame.display.update()
 
 
