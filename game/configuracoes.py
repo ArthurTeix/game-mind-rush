@@ -6,7 +6,7 @@ pygame.font.init()
 # --- Configuração de tela ---
 # Deixe False durante o desenvolvimento para testar em janela
 # (fullscreen trava o foco do mouse/teclado e dificulta o debug).
-FULLSCREEN = True
+FULLSCREEN = False
 
 info_tela = pygame.display.Info()
 LARGURA_TELA = info_tela.current_w
