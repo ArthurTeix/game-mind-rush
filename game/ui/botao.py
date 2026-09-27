@@ -46,7 +46,8 @@ botao_config = Botao("./img/botoes/CONFIGMR.png")
 botao_ranking = Botao("./img/botoes/RANKINGMR.png")
 botao_sair = Botao("./img/botoes/SAIRMR.png")
 botao_reiniciar = Botao("./img/botoes/REINICIARMR.png")
-botao_sair_gameover = Botao("./img/botoes/SAIRMR.png")
+botao_sair_gameover = Botao("./img/botoes/SAIRGOMR.png")
+botao_menu = Botao("./img/botoes/MENUMR.png")
 
 # posiciona os botões do menu centralizado
 Y_BOTOES_MENU = int(ALTURA_TELA * 0.85)
@@ -58,6 +59,6 @@ centralizar_em_linha(
 # posiciona os botões do game over centralizado
 Y_BOTOES_GAMEOVER = int(ALTURA_TELA * 0.85)
 centralizar_em_linha(
-    [botao_reiniciar, botao_sair_gameover],
+    [botao_reiniciar, botao_menu, botao_sair_gameover],
     y=Y_BOTOES_GAMEOVER
 )

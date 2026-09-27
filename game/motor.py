@@ -6,7 +6,7 @@ from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREE
 from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover
-from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover
+from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 
 class Motor:
     def __init__(self):
@@ -108,6 +108,8 @@ class Motor:
                     if botao_reiniciar.clicado(evento.pos):
                         self.reiniciar_jogo()
                         self.estado = "jogar"
+                    elif botao_menu.clicado(evento.pos):
+                        self.estado = "menu"
                     elif botao_sair_gameover.clicado(evento.pos):
                         self.rodando = False
 
