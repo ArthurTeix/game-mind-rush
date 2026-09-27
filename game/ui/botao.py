@@ -20,7 +20,8 @@ class Botao:
         return self.rect.collidepoint(pos_clique)
 
 
-botao_jogar = Botao("./img/botoes/botao_jogar.png", centro=(231, 100))
-botao_ranking = Botao("./img/botoes/botao_ranking.png", centro=(231, 235))
-botao_perfil = Botao("./img/botoes/botao_perfil.png", centro=(231, 370))
-botao_sair = Botao("./img/botoes/botao_sair.png", centro=(231, 505))
+botao_jogar = Botao("./img/botoes/JOGARMR.png", centro=(60, 840))
+botao_modos = Botao("./img/botoes/MODOSMR.png", centro=(424, 840))
+botao_config = Botao("./img/botoes/CONFIGMR", centro=(788, 840))
+botao_ranking = Botao("./img/botoes/RANKINGMR.png", centro=(1152, 840))
+botao_sair = Botao("./img/botoes/SAIRMR.png", centro=(1516, 840))
