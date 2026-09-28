@@ -3,9 +3,10 @@
 import pygame
 
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREEN, FPS
+from game.database.db import criar_tabela_pontuacao, salvar_pontuacao, get_top5_pontuacao
 from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
-from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover
+from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 
 class Motor:
@@ -13,6 +14,8 @@ class Motor:
         flags = pygame.FULLSCREEN if FULLSCREEN else 0
         self.tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), flags)
         pygame.display.set_caption(TITULO_JOGO)
+
+        criar_tabela_pontuacao()
 
         self.watch = pygame.time.Clock()
         self.rodando = True
@@ -62,8 +65,13 @@ class Motor:
 
             elif self.estado == "gameover":
                 desenhar_gameover(self.tela, self.imagem_gameover)
+                pygame.display.update()
 
-            pygame.display.update()
+            elif self.estado == 'rank':
+                top5 = get_top5_pontuacao()
+                desenhar_ranking(self.tela, top5)
+
+                pygame.display.update()
 
 
     def reiniciar_jogo(self):
@@ -76,7 +84,7 @@ class Motor:
         espaco_minimo=150,
         espaco_maximo=270
         )
-        
+
         altura_personagem = 50
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
 
@@ -104,6 +112,11 @@ class Motor:
                 elif self.estado == "menu" and botao_sair.clicado(evento.pos):
                     self.rodando = False
 
+                elif self.estado == "menu" and botao_ranking.clicado(evento.pos):
+                    self.estado = "rank"
+
+                    pygame.display.update()
+
                 elif self.estado == "gameover":
                     if botao_reiniciar.clicado(evento.pos):
                         self.reiniciar_jogo()
@@ -121,6 +134,7 @@ class Motor:
 
         if not self.personagem.vivo:
             self.estado = "gameover"
+            salvar_pontuacao(self.pontos)
 
     def encerrar_jogo(self):
         self.rodando = False

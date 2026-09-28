@@ -43,3 +43,19 @@ def desenhar_gameover(tela, imagem_gameover):
     botao_sair_gameover.desenhar(tela)
 
     pygame.display.update()
+
+
+def desenhar_ranking(tela, top5):
+    tela.fill(
+        
+    )
+
+    espacamento_ranking = 80
+    y = 320
+
+    for i, pontos in enumerate(top5):
+        ranking = FONTE_TITULO.render(f'{pontos}', 1, cores['rosa'])
+        rect_rank_text = ranking.get_rect(
+            center=(LARGURA_TELA // 2, y + espacamento_ranking * i)
+        )
+        tela.blit(ranking, rect_rank_text)
