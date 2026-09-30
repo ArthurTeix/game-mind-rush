@@ -6,7 +6,7 @@ from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREE
 from game.database.db import criar_tabela_pontuacao, salvar_pontuacao, get_top5_pontuacao
 from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
-from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking
+from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 
 class Motor:
@@ -35,7 +35,7 @@ class Motor:
 
         # posiciona o personagem exatamente em cima do primeiro bloco de chão,
         # em vez de usar um valor fixo que pode não bater com a altura real do bloco
-        altura_personagem = 50
+        altura_personagem = 100
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
 
         self.personagem = Personagem(
@@ -85,7 +85,7 @@ class Motor:
         espaco_maximo=270
         )
 
-        altura_personagem = 50
+        altura_personagem = 100
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
 
         self.personagem.rect.x = 150
@@ -114,6 +114,10 @@ class Motor:
 
                 elif self.estado == "menu" and botao_ranking.clicado(evento.pos):
                     self.estado = "rank"
+
+                elif self.estado == "rank":
+                    if rect_sair_ranking.collidepoint(evento.pos):
+                        self.estado = "menu"
 
                     pygame.display.update()
 
