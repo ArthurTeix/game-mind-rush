@@ -37,7 +37,7 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
     gerenciador_chao.desenhar(tela)
     personagem.desenhar(tela)
 
-    texto_pontos = FONTE_PONTOS.render(f"Pontuação: {pontos}", True, cores['rosa'])
+    texto_pontos = FONTE_PONTOS.render(f"Pontuação: {pontos}", True, cores['azul-jogo'])
     tela.blit(texto_pontos, (20, 20))
 
     pygame.display.update()
