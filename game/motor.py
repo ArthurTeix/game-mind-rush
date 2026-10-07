@@ -35,18 +35,18 @@ class Motor:
 
         # posiciona o personagem exatamente em cima do primeiro bloco de chão,
         # em vez de usar um valor fixo que pode não bater com a altura real do bloco
-        altura_personagem = 100
+        altura_personagem = 80
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
 
         self.personagem = Personagem(
             largura_tela=LARGURA_TELA,
             altura_tela=ALTURA_TELA,
             x=150, y=y_inicial,
-            largura=57, altura=altura_personagem,
+            largura=70, altura=altura_personagem,
             caminhos_imagens=[
-                "./img/personagem-teste.png",
-                "./img/personagem-teste.png",
-                "./img/personagem-teste.png",
+                "./img/personagens/computacao/robo_pos0.png",
+                "./img/personagens/computacao/robo_pos1.png",
+                "./img/personagens/computacao/robo_pos2.png",
             ]
         )
 

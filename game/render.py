@@ -10,10 +10,12 @@ import os
 CAMINHO_BG_RANK = './img/fundos/bg_ranking.png'
 imagem_bg_rank = pygame.image.load(CAMINHO_BG_RANK)
 imagem_bg_rank = pygame.transform.scale(imagem_bg_rank, (LARGURA_TELA, ALTURA_TELA))
+
 CAMINHO_SAIR_RANKING = './img/botoes/sair_ranking.png'
 imagem_sair_ranking = pygame.image.load(CAMINHO_SAIR_RANKING)
-imagem_sair_ranking = pygame.transform.scale(imagem_sair_ranking, (150, 150))
-rect_sair_ranking = imagem_sair_ranking.get_rect(topleft=(20, 20))
+imagem_sair_ranking = pygame.transform.scale(imagem_sair_ranking, (200, 200))
+rect_sair_ranking = imagem_sair_ranking.get_rect(topleft=(110, 20))
+
 CAMINHO_BG_JOGO = './img/fundos/bg_jogo.png'
 imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
 imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
