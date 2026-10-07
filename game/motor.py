@@ -28,7 +28,7 @@ class Motor:
         self.gerenciador_chao = GerenciadorChao(
             largura_tela=LARGURA_TELA,
             altura_tela=ALTURA_TELA,
-            velocidade=5,
+            velocidade=8,
             espaco_minimo=150,
             espaco_maximo=270
         )
@@ -81,11 +81,11 @@ class Motor:
         largura_tela=LARGURA_TELA,
         altura_tela=ALTURA_TELA,
         velocidade=5,
-        espaco_minimo=150,
+        espaco_minimo=100,
         espaco_maximo=270
         )
 
-        altura_personagem = 100
+        altura_personagem = 150
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
 
         self.personagem.rect.x = 150

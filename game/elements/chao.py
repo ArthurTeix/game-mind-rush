@@ -4,6 +4,13 @@ from game.util.cores import cores
 
 
 class Chao:
+    LARGURA_OBSTACULO = 110
+    ALTURA_OBSTACULO = 50      # mais grosso (antes era 45)
+    MARGEM_INICIO = 140        # distância da ponta esquerda da plataforma
+    MARGEM_FIM = 160           # distância da ponta direita da plataforma
+    AFUNDAR_OBSTACULO = 2      # quanto a caixa "entra" na plataforma (cola no chão)
+    _imagem_obstaculo = None   # carregada uma vez só e reaproveitada
+
     def __init__(self, x, y, largura, altura, velocidade):
         self.rect = pygame.Rect(x, y, largura, altura)
         self.velocidade = velocidade
@@ -11,24 +18,47 @@ class Chao:
         self.imagem = pygame.Surface((largura, altura))
         self.imagem.fill(cores['azul-jogo'])
 
-        # APENAS QUANDO TIVER IMG
-        # self.imagem = pygame.image.load('./img/elementos/chao.png').convert_alpha()
-        # self.imagem = pygame.transform.scale(self.imagem, (largura, altura))
+        # obstáculo em cima da plataforma (None = sem obstáculo)
+        self.obstaculo = None
+
+    def criar_obstaculo(self):
+        largura = Chao.LARGURA_OBSTACULO
+        altura = Chao.ALTURA_OBSTACULO
+
+        # faixa em que o obstáculo pode nascer, respeitando as duas margens
+        x_min = self.rect.x + Chao.MARGEM_INICIO
+        x_max = self.rect.right - Chao.MARGEM_FIM - largura
+        if x_max < x_min:
+            return  # plataforma curta demais
+
+        if Chao._imagem_obstaculo is None:
+            imagem = pygame.image.load('./img/elementos/obstaculo.png').convert()
+            imagem.set_colorkey(imagem.get_at((0, 0)))
+            imagem = imagem.convert_alpha()
+            imagem = imagem.subsurface(imagem.get_bounding_rect()).copy()
+            Chao._imagem_obstaculo = pygame.transform.scale(imagem, (largura, altura))
+
+        x = randint(x_min, x_max)
+        y = self.rect.top - altura + Chao.AFUNDAR_OBSTACULO
+        self.obstaculo = pygame.Rect(x, y, largura, altura)
 
     def mover(self):
         self.rect.x -= self.velocidade
+        if self.obstaculo is not None:
+            self.obstaculo.x -= self.velocidade
 
     def saiu_da_tela(self):
         return self.rect.right <= 0
 
     def desenhar(self, tela):
         tela.blit(self.imagem, self.rect)
-
+        if self.obstaculo is not None:
+            tela.blit(Chao._imagem_obstaculo, self.obstaculo)
 
 class GerenciadorChao:
     def __init__(self, largura_tela, altura_tela, velocidade,
-                altura_minima=400, altura_maxima=500,
-                largura_minima=400, largura_maxima=500,
+                altura_minima=380, altura_maxima=500,
+                largura_minima=300, largura_maxima=700,
                 espaco_minimo=50, espaco_maximo=150):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
@@ -72,6 +102,10 @@ class GerenciadorChao:
 
         novo_chao = Chao(x, y, largura_sorteada, altura_sorteada, self.velocidade)
         self.lista_chaos.append(novo_chao)
+
+        # 50% de chance de nascer um obstáculo em cima deste bloco
+        if randint(1, 100) <= 50:
+            novo_chao.criar_obstaculo()
 
         return novo_chao
 
