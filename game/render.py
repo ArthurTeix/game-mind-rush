@@ -21,8 +21,12 @@ imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
 imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
 
 
-def desenhar_menu(tela):
+def desenhar_menu(tela, jogador=None):
     tela.fill(cores['cinza-menu'])
+
+    if jogador:
+        saudacao = FONTE_TITULO.render(f"Olá, {jogador['usuario']}", True, cores['azul-jogo'])
+        tela.blit(saudacao, saudacao.get_rect(center=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.07))))
 
     logo_menu.desenhar(tela)
     botao_jogar.desenhar(tela)
