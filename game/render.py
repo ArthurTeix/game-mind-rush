@@ -1,11 +1,11 @@
 # Arquivo responsável por desenhar e renderizar as telas do jogo
+# (o pygame.display.update() é chamado uma única vez por frame, no motor.py)
 
 import pygame
 from game.util.cores import cores
 from game.ui.logo import logo_menu
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
-import os
 
 CAMINHO_BG_RANK = './img/fundos/bg_ranking.png'
 imagem_bg_rank = pygame.image.load(CAMINHO_BG_RANK)
@@ -20,6 +20,7 @@ CAMINHO_BG_JOGO = './img/fundos/bg_jogo.png'
 imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
 imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
 
+
 def desenhar_menu(tela):
     tela.fill(cores['cinza-menu'])
 
@@ -29,8 +30,6 @@ def desenhar_menu(tela):
     botao_config.desenhar(tela)
     botao_ranking.desenhar(tela)
     botao_sair.desenhar(tela)
-
-    pygame.display.update()
 
 
 def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
@@ -42,8 +41,6 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
     texto_pontos = FONTE_PONTOS.render(f"Pontuação: {pontos}", True, cores['azul-jogo'])
     tela.blit(texto_pontos, (20, 20))
 
-    pygame.display.update()
-
 
 def desenhar_gameover(tela, imagem_gameover):
     tela.fill(cores['cinza-menu'])
@@ -54,8 +51,6 @@ def desenhar_gameover(tela, imagem_gameover):
     botao_reiniciar.desenhar(tela)
     botao_menu.desenhar(tela)
     botao_sair_gameover.desenhar(tela)
-
-    pygame.display.update()
 
 
 def desenhar_ranking(tela, top5):
@@ -73,5 +68,3 @@ def desenhar_ranking(tela, top5):
         tela.blit(ranking, rect_rank_text)
 
     tela.blit(imagem_sair_ranking, rect_sair_ranking)
-
-    pygame.display.update()
