@@ -11,6 +11,11 @@ class Personagem:
         self.rect = pygame.Rect(x, y, largura, altura)
 
         # --- física vertical ---
+        # pos_y guarda a posição como float: o Rect só aceita inteiros, e
+        # somar 0.6 direto no rect.y fazia o personagem "piscar" no chão
+        # (no_chao alternava True/False e o pulo falhava a cada 2 frames)
+        self.pos_y = float(y)
+        self.bottom_anterior = self.rect.bottom
         self.velocidade_y = 0
         self.gravidade = 0.6
         self.forca_salto = -16
@@ -30,37 +35,59 @@ class Personagem:
         self.contador_frames = 0
         self.intervalo_troca = 6
 
+    def resetar(self, x, y):
+        """Volta o personagem ao estado inicial de uma partida."""
+        self.rect.x = x
+        self.rect.y = y
+        self.pos_y = float(y)
+        self.bottom_anterior = self.rect.bottom
+        self.velocidade_y = 0
+        self.no_chao = False
+        self.vivo = True
+        self.frame_atual = 0
+        self.contador_frames = 0
+
     def pular(self):
         if self.no_chao:
             self.velocidade_y = self.forca_salto
             self.no_chao = False
 
     def aplicar_gravidade(self):
+        # guarda onde os pés estavam ANTES de mover neste frame
+        self.bottom_anterior = self.rect.bottom
+
         self.velocidade_y += self.gravidade
-        self.rect.y += self.velocidade_y
+        self.pos_y += self.velocidade_y
+        self.rect.y = round(self.pos_y)
 
     def verificar_colisao_com_chao(self, lista_de_chaos):
         self.no_chao = False
 
-        for chao in lista_de_chaos:
-            if self.rect.colliderect(chao.rect) and self.velocidade_y >= 0:
-                # posição que o personagem tinha ANTES de mover neste frame
-                bottom_anterior = self.rect.bottom - self.velocidade_y
+        # hitbox um pouco menor que a imagem, para não ser injusto
+        hitbox = self.rect.inflate(-20, -10)
 
-                # só conta como "pousar em cima" se ele estava acima do
-                # topo do bloco no frame passado (10px de tolerância)
-                if bottom_anterior <= chao.rect.top + 10:
-                    self.rect.bottom = chao.rect.top
-                    self.velocidade_y = 0
-                    self.no_chao = True
+        for chao in lista_de_chaos:
+            if not self.rect.colliderect(chao.rect):
+                continue
+
+            # pousar em cima: está descendo e os pés estavam acima do
+            # topo do bloco no frame passado (10px de tolerância)
+            if self.velocidade_y >= 0 and self.bottom_anterior <= chao.rect.top + 10:
+                self.rect.bottom = chao.rect.top
+                self.pos_y = float(self.rect.y)
+                self.velocidade_y = 0
+                self.no_chao = True
+                break
+
+            # qualquer outra batida (lateral ou por baixo) é fatal
+            if hitbox.colliderect(chao.rect):
+                self.vivo = False
 
     def verificar_queda_fatal(self):
-
         if self.rect.y > self.altura_tela:
             self.vivo = False
 
     def verificar_colisao_obstaculo(self, lista_de_chaos):
-        # hitbox um pouco menor que a imagem, para não ser injusto
         hitbox = self.rect.inflate(-20, -10)
         for chao in lista_de_chaos:
             if chao.obstaculo is not None and hitbox.colliderect(chao.obstaculo):
