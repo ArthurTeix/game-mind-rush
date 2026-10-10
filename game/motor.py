@@ -9,6 +9,15 @@ from game.elements.chao import GerenciadorChao
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 
+# --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
+VELOCIDADE_CHAO = 6
+ESPACO_MINIMO = 150
+ESPACO_MAXIMO = 270
+ALTURA_PERSONAGEM = 80
+LARGURA_PERSONAGEM = 70
+X_PERSONAGEM = 150
+
+
 class Motor:
     def __init__(self):
         flags = pygame.FULLSCREEN if FULLSCREEN else 0
@@ -20,35 +29,42 @@ class Motor:
         self.watch = pygame.time.Clock()
         self.rodando = True
         self.pontos = 0
+        self.top5 = []
         self.estado = "menu"
         self.imagem_gameover = pygame.image.load("./img/mensagem/MORREUMR.png").convert_alpha()
 
-        # cria o gerenciador de chão primeiro, porque o personagem
-        # precisa nascer em cima de um bloco de chão já existente
-        self.gerenciador_chao = GerenciadorChao(
-            largura_tela=LARGURA_TELA,
-            altura_tela=ALTURA_TELA,
-            velocidade=8,
-            espaco_minimo=150,
-            espaco_maximo=270
-        )
-
-        # posiciona o personagem exatamente em cima do primeiro bloco de chão,
-        # em vez de usar um valor fixo que pode não bater com a altura real do bloco
-        altura_personagem = 80
-        y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
-
+        # o personagem é criado uma única vez (carrega as imagens);
+        # a posição real é definida em iniciar_partida()
         self.personagem = Personagem(
             largura_tela=LARGURA_TELA,
             altura_tela=ALTURA_TELA,
-            x=150, y=y_inicial,
-            largura=70, altura=altura_personagem,
+            x=X_PERSONAGEM, y=0,
+            largura=LARGURA_PERSONAGEM, altura=ALTURA_PERSONAGEM,
             caminhos_imagens=[
                 "./img/personagens/computacao/robo_pos0.png",
                 "./img/personagens/computacao/robo_pos1.png",
                 "./img/personagens/computacao/robo_pos2.png",
             ]
         )
+
+        self.iniciar_partida()
+
+    def iniciar_partida(self):
+        """Prepara uma partida nova do zero (usada no início, no reinício e ao jogar pelo menu)."""
+        self.pontos = 0
+
+        # o chão é criado primeiro, porque o personagem
+        # precisa nascer em cima de um bloco já existente
+        self.gerenciador_chao = GerenciadorChao(
+            largura_tela=LARGURA_TELA,
+            altura_tela=ALTURA_TELA,
+            velocidade=VELOCIDADE_CHAO,
+            espaco_minimo=ESPACO_MINIMO,
+            espaco_maximo=ESPACO_MAXIMO
+        )
+
+        y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - ALTURA_PERSONAGEM
+        self.personagem.resetar(X_PERSONAGEM, y_inicial)
 
     def jogo(self):
         while self.rodando:
@@ -65,33 +81,12 @@ class Motor:
 
             elif self.estado == "gameover":
                 desenhar_gameover(self.tela, self.imagem_gameover)
-                pygame.display.update()
 
-            elif self.estado == 'rank':
-                top5 = get_top5_pontuacao()
-                desenhar_ranking(self.tela, top5)
+            elif self.estado == "rank":
+                desenhar_ranking(self.tela, self.top5)
 
-                pygame.display.update()
-
-
-    def reiniciar_jogo(self):
-        self.pontos = 0
-
-        self.gerenciador_chao = GerenciadorChao(
-        largura_tela=LARGURA_TELA,
-        altura_tela=ALTURA_TELA,
-        velocidade=5,
-        espaco_minimo=100,
-        espaco_maximo=270
-        )
-
-        altura_personagem = 150
-        y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - altura_personagem
-
-        self.personagem.rect.x = 150
-        self.personagem.rect.y = y_inicial
-        self.personagem.vivo = True
-        self.personagem.vidas = 3
+            # único update de tela por frame
+            pygame.display.update()
 
     def capturar_eventos(self):
         for evento in pygame.event.get():
@@ -106,24 +101,23 @@ class Motor:
                     self.personagem.pular()
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
-                if self.estado == "menu" and botao_jogar.clicado(evento.pos):
-                    self.estado = "jogar"
-
-                elif self.estado == "menu" and botao_sair.clicado(evento.pos):
-                    self.rodando = False
-
-                elif self.estado == "menu" and botao_ranking.clicado(evento.pos):
-                    self.estado = "rank"
+                if self.estado == "menu":
+                    if botao_jogar.clicado(evento.pos):
+                        self.iniciar_partida()
+                        self.estado = "jogar"
+                    elif botao_ranking.clicado(evento.pos):
+                        self.top5 = get_top5_pontuacao()  # consulta o banco uma vez, não a cada frame
+                        self.estado = "rank"
+                    elif botao_sair.clicado(evento.pos):
+                        self.rodando = False
 
                 elif self.estado == "rank":
                     if rect_sair_ranking.collidepoint(evento.pos):
                         self.estado = "menu"
 
-                    pygame.display.update()
-
                 elif self.estado == "gameover":
                     if botao_reiniciar.clicado(evento.pos):
-                        self.reiniciar_jogo()
+                        self.iniciar_partida()
                         self.estado = "jogar"
                     elif botao_menu.clicado(evento.pos):
                         self.estado = "menu"
