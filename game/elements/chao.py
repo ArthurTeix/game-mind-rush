@@ -58,6 +58,11 @@ class Chao:
 
 
 class GerenciadorChao:
+    DEBUG_MEDIDAS = False   # liga/desliga com F3 durante o jogo (mostra largura e vão de cada bloco)
+    ARQUIVO_LOG = './debug_chao.log'
+    _fonte_debug = None
+    _frame_debug = 0
+
     def __init__(self, largura_tela, altura_tela, velocidade,
                 altura_minima=380, altura_maxima=500,
                 largura_minima=300, largura_maxima=700,
@@ -77,7 +82,9 @@ class GerenciadorChao:
 
         # o primeiro bloco é fixo e previsível (não sorteado), para
         # garantir uma "zona segura" onde o personagem nasce em pé
-        primeiro_chao = self.criar_chao_fixo(x=0, largura=350, altura=self.altura_maxima)
+        # (largo o bastante para o personagem correr um bom tempo antes do primeiro vão)
+        largura_inicial = max(350, int(self.largura_tela * 0.6))
+        primeiro_chao = self.criar_chao_fixo(x=0, largura=largura_inicial, altura=self.altura_maxima)
         self.altura_do_chao_inicial = primeiro_chao.rect.height
 
         # preenche o resto da tela com blocos sorteados normalmente
@@ -113,8 +120,14 @@ class GerenciadorChao:
 
     def atualizar(self):
         # passo 1: move cada bloco de chão para a esquerda
+        if GerenciadorChao.DEBUG_MEDIDAS:
+            antes = [(c.rect.x, c.rect.width) for c in self.lista_chaos]
+
         for chao in self.lista_chaos:
             chao.mover()
+
+        if GerenciadorChao.DEBUG_MEDIDAS:
+            self._conferir_movimento(antes)
 
         # passo 2: separa os blocos que ainda estão visíveis,
         # e conta quantos saíram (usado para pontuação)
@@ -148,3 +161,49 @@ class GerenciadorChao:
     def desenhar(self, tela):
         for chao in self.lista_chaos:
             chao.desenhar(tela)
+
+        if GerenciadorChao.DEBUG_MEDIDAS:
+            self._desenhar_medidas(tela)
+
+    @staticmethod
+    def _registrar(mensagem):
+        """Escreve no terminal e no arquivo debug_chao.log (na pasta de onde o jogo foi iniciado)."""
+        linha = f"[frame {GerenciadorChao._frame_debug}] {mensagem}"
+        print("[DEBUG]", linha)
+        try:
+            with open(GerenciadorChao.ARQUIVO_LOG, 'a', encoding='utf-8') as arq:
+                arq.write(linha + "\n")
+        except OSError:
+            pass
+
+    def _conferir_movimento(self, antes):
+        """Registra se algum bloco andar diferente, mudar de largura ou se algum vão mudar."""
+        GerenciadorChao._frame_debug += 1
+
+        for i, (chao, (x0, w0)) in enumerate(zip(self.lista_chaos, antes)):
+            if x0 - chao.rect.x != self.velocidade:
+                self._registrar(f"bloco {i} andou {x0 - chao.rect.x}px (esperado {self.velocidade}px)")
+            if chao.rect.width != w0:
+                self._registrar(f"bloco {i} mudou de largura: {w0} -> {chao.rect.width}")
+
+        for i in range(len(self.lista_chaos) - 1):
+            vao_antes = antes[i + 1][0] - (antes[i][0] + antes[i][1])
+            vao_depois = self.lista_chaos[i + 1].rect.left - self.lista_chaos[i].rect.right
+            if vao_antes != vao_depois:
+                self._registrar(f"vão entre blocos {i} e {i + 1} mudou: {vao_antes} -> {vao_depois}")
+
+    def _desenhar_medidas(self, tela):
+        """Mostra L = largura real de cada bloco e vão = distância até o próximo bloco (em pixels)."""
+        if GerenciadorChao._fonte_debug is None:
+            GerenciadorChao._fonte_debug = pygame.font.SysFont('arial', 22, bold=True)
+        fonte = GerenciadorChao._fonte_debug
+
+        for i, chao in enumerate(self.lista_chaos):
+            texto = fonte.render(f"L={chao.rect.width}", True, cores['amarelo'])
+            tela.blit(texto, (max(chao.rect.x, 0) + 8, chao.rect.y + 60))
+
+            if i + 1 < len(self.lista_chaos):
+                proximo = self.lista_chaos[i + 1]
+                vao = proximo.rect.left - chao.rect.right
+                texto = fonte.render(f"vão={vao}", True, cores['vermelho'])
+                tela.blit(texto, (chao.rect.right + 4, self.altura_tela - 40))
