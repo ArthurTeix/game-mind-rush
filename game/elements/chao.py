@@ -5,10 +5,11 @@ from game.util.cores import cores
 
 class Chao:
     LARGURA_OBSTACULO = 110
-    ALTURA_OBSTACULO = 50      # mais grosso (antes era 45)
+    ALTURA_OBSTACULO = 50
     MARGEM_INICIO = 140        # distância da ponta esquerda da plataforma
     MARGEM_FIM = 160           # distância da ponta direita da plataforma
     AFUNDAR_OBSTACULO = 2      # quanto a caixa "entra" na plataforma (cola no chão)
+    CHANCE_OBSTACULO = 70      # % de chance de nascer um obstáculo em cada bloco
     _imagem_obstaculo = None   # carregada uma vez só e reaproveitada
 
     def __init__(self, x, y, largura, altura, velocidade):
@@ -54,6 +55,7 @@ class Chao:
         tela.blit(self.imagem, self.rect)
         if self.obstaculo is not None:
             tela.blit(Chao._imagem_obstaculo, self.obstaculo)
+
 
 class GerenciadorChao:
     def __init__(self, largura_tela, altura_tela, velocidade,
@@ -103,8 +105,8 @@ class GerenciadorChao:
         novo_chao = Chao(x, y, largura_sorteada, altura_sorteada, self.velocidade)
         self.lista_chaos.append(novo_chao)
 
-        # 50% de chance de nascer um obstáculo em cima deste bloco
-        if randint(1, 100) <= 70:
+        # chance (em %) de nascer um obstáculo em cima deste bloco
+        if randint(1, 100) <= Chao.CHANCE_OBSTACULO:
             novo_chao.criar_obstaculo()
 
         return novo_chao
