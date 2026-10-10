@@ -3,19 +3,22 @@
 import pygame
 
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREEN, FPS
-from game.database.db import criar_tabela_pontuacao, salvar_pontuacao, get_top5_pontuacao
+from game.database.db import criar_tabelas, salvar_pontuacao, get_top5_pontuacao
 from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
+from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
 
 # --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
-VELOCIDADE_CHAO = 6
+VELOCIDADE_CHAO = 6.5
 ESPACO_MINIMO = 150
 ESPACO_MAXIMO = 270
 ALTURA_PERSONAGEM = 80
 LARGURA_PERSONAGEM = 70
 X_PERSONAGEM = 150
+
+ESTADOS_CONTA = ("config", "login", "cadastro")
 
 
 class Motor:
@@ -24,7 +27,7 @@ class Motor:
         self.tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), flags)
         pygame.display.set_caption(TITULO_JOGO)
 
-        criar_tabela_pontuacao()
+        criar_tabelas()
 
         self.watch = pygame.time.Clock()
         self.rodando = True
@@ -32,6 +35,15 @@ class Motor:
         self.top5 = []
         self.estado = "menu"
         self.imagem_gameover = pygame.image.load("./img/mensagem/MORREUMR.png").convert_alpha()
+
+        # jogador logado: None ou {"id": ..., "usuario": ...}
+        self.jogador = None
+        self.origem_login = "menu"   # para onde o botão "Voltar" do login leva
+
+        # telas de conta
+        self.tela_config = TelaConfig()
+        self.tela_login = TelaLogin()
+        self.tela_cadastro = TelaCadastro()
 
         # o personagem é criado uma única vez (carrega as imagens);
         # a posição real é definida em iniciar_partida()
@@ -48,6 +60,11 @@ class Motor:
         )
 
         self.iniciar_partida()
+
+    @property
+    def logado(self):
+        """True se há um jogador logado. Use para liberar conteúdo exclusivo (ex.: personagem)."""
+        return self.jogador is not None
 
     def iniciar_partida(self):
         """Prepara uma partida nova do zero (usada no início, no reinício e ao jogar pelo menu)."""
@@ -73,7 +90,7 @@ class Motor:
             self.capturar_eventos()
 
             if self.estado == "menu":
-                desenhar_menu(self.tela)
+                desenhar_menu(self.tela, self.jogador)
 
             elif self.estado == "jogar":
                 self.atualizar_jogo()
@@ -85,13 +102,72 @@ class Motor:
             elif self.estado == "rank":
                 desenhar_ranking(self.tela, self.top5)
 
+            elif self.estado == "config":
+                self.tela_config.desenhar(self.tela, self.jogador)
+
+            elif self.estado == "login":
+                self.tela_login.desenhar(self.tela)
+
+            elif self.estado == "cadastro":
+                self.tela_cadastro.desenhar(self.tela)
+
             # único update de tela por frame
             pygame.display.update()
+
+    # ------------------------------------------------------------ navegação
+
+    def abrir_login(self, mensagem=None, origem="menu", sucesso=False):
+        self.origem_login = origem
+        self.tela_login.resetar(mensagem, sucesso)
+        self.estado = "login"
+
+    def abrir_cadastro(self):
+        self.tela_cadastro.resetar()
+        self.estado = "cadastro"
+
+    def tratar_evento_conta(self, evento):
+        """Eventos das telas de configuração, login e cadastro."""
+        if self.estado == "config":
+            acao = self.tela_config.tratar_evento(evento, self.jogador)
+
+            if acao == "login":
+                self.abrir_login(origem="config")
+            elif acao == "cadastro":
+                self.abrir_cadastro()
+            elif acao == "logout":
+                self.jogador = None
+            elif acao == "voltar":
+                self.estado = "menu"
+
+        elif self.estado == "login":
+            acao = self.tela_login.tratar_evento(evento)
+
+            if acao == "logado":
+                self.jogador = self.tela_login.jogador_logado
+                self.estado = "menu"
+            elif acao == "voltar":
+                self.estado = self.origem_login
+
+        elif self.estado == "cadastro":
+            acao = self.tela_cadastro.tratar_evento(evento)
+
+            if acao == "cadastrado":
+                self.abrir_login("Conta criada com sucesso!", origem="config", sucesso=True)
+                # já preenche o usuário e deixa o cursor na senha
+                self.tela_login.campo_usuario.texto = self.tela_cadastro.usuario_criado
+                self.tela_login.focar_campo(self.tela_login.campo_senha)
+            elif acao == "voltar":
+                self.estado = "config"
 
     def capturar_eventos(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 self.encerrar_jogo()
+
+            # nas telas de conta, o ESC volta uma tela em vez de fechar o jogo
+            if self.estado in ESTADOS_CONTA:
+                self.tratar_evento_conta(evento)
+                continue
 
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 self.encerrar_jogo()
@@ -103,11 +179,22 @@ class Motor:
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if self.estado == "menu":
                     if botao_jogar.clicado(evento.pos):
+                        # qualquer pessoa pode jogar, logada ou não
                         self.iniciar_partida()
                         self.estado = "jogar"
+
                     elif botao_ranking.clicado(evento.pos):
-                        self.top5 = get_top5_pontuacao()  # consulta o banco uma vez, não a cada frame
-                        self.estado = "rank"
+                        # o ranking é individual, então precisa de login
+                        if not self.logado:
+                            self.abrir_login("Faça login para ver o seu ranking.")
+                        else:
+                            # consulta o banco uma vez, não a cada frame
+                            self.top5 = get_top5_pontuacao(self.jogador["id"])
+                            self.estado = "rank"
+
+                    elif botao_config.clicado(evento.pos):
+                        self.estado = "config"
+
                     elif botao_sair.clicado(evento.pos):
                         self.rodando = False
 
@@ -132,7 +219,9 @@ class Motor:
 
         if not self.personagem.vivo:
             self.estado = "gameover"
-            salvar_pontuacao(self.pontos)
+            # visitantes jogam normalmente, mas a pontuação só é salva com login
+            if self.logado:
+                salvar_pontuacao(self.jogador["id"], self.pontos)
 
     def encerrar_jogo(self):
         self.rodando = False
