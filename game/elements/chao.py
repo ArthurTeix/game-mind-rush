@@ -104,7 +104,7 @@ class GerenciadorChao:
         self.lista_chaos.append(novo_chao)
 
         # 50% de chance de nascer um obstáculo em cima deste bloco
-        if randint(1, 100) <= 50:
+        if randint(1, 100) <= 70:
             novo_chao.criar_obstaculo()
 
         return novo_chao
