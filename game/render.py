@@ -20,9 +20,12 @@ CAMINHO_BG_JOGO = './img/fundos/bg_jogo.png'
 imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
 imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
 
+CAMINHO_MENU = './img/fundos/MENU.png'
+imagem_menu = pygame.image.load(CAMINHO_MENU)
+imagem_menu = pygame.transform.scale(imagem_menu, (LARGURA_TELA, ALTURA_TELA))
 
-def desenhar_menu(tela, jogador=None):
-    tela.fill(cores['cinza-menu'])
+def desenhar_menu(tela, imagem_menu, jogador=None):
+    tela.blit(imagem_menu, (0, 0))
 
     if jogador:
         saudacao = FONTE_TITULO.render(f"Olá, {jogador['usuario']}", True, cores['azul-jogo'])
@@ -46,11 +49,11 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
     tela.blit(texto_pontos, (20, 20))
 
 
-def desenhar_gameover(tela, imagem_gameover):
-    tela.fill(cores['cinza-menu'])
+def desenhar_gameover(tela, imagem_menu):
+    tela.blit(imagem_menu, (0, 0))
 
-    rect_imagem = imagem_gameover.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-    tela.blit(imagem_gameover, rect_imagem)
+    rect_imagem = imagem_menu.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+    tela.blit(imagem_menu, rect_imagem)
 
     botao_reiniciar.desenhar(tela)
     botao_menu.desenhar(tela)
