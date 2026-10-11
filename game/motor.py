@@ -9,6 +9,7 @@ from game.elements.chao import GerenciadorChao
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
+from game.render import imagem_menu
 
 # --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
 VELOCIDADE_CHAO = 6.5
@@ -90,7 +91,7 @@ class Motor:
             self.capturar_eventos()
 
             if self.estado == "menu":
-                desenhar_menu(self.tela, self.jogador)
+                desenhar_menu(self.tela, imagem_menu, self.jogador)
 
             elif self.estado == "jogar":
                 self.atualizar_jogo()
