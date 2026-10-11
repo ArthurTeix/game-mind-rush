@@ -4,27 +4,10 @@
 import pygame
 from game.util.cores import cores
 from game.ui.logo import logo_menu
-from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS
+from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, imagem_gameover
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 
-CAMINHO_BG_RANK = './img/fundos/bg_ranking.png'
-imagem_bg_rank = pygame.image.load(CAMINHO_BG_RANK)
-imagem_bg_rank = pygame.transform.scale(imagem_bg_rank, (LARGURA_TELA, ALTURA_TELA))
-
-CAMINHO_SAIR_RANKING = './img/botoes/sair_ranking.png'
-imagem_sair_ranking = pygame.image.load(CAMINHO_SAIR_RANKING)
-imagem_sair_ranking = pygame.transform.scale(imagem_sair_ranking, (200, 200))
-rect_sair_ranking = imagem_sair_ranking.get_rect(topleft=(110, 20))
-
-CAMINHO_BG_JOGO = './img/fundos/bg_jogo.png'
-imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
-imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
-
-CAMINHO_MENU = './img/fundos/MENU.png'
-imagem_menu = pygame.image.load(CAMINHO_MENU)
-imagem_menu = pygame.transform.scale(imagem_menu, (LARGURA_TELA, ALTURA_TELA))
-
-def desenhar_menu(tela, imagem_menu, jogador=None):
+def desenhar_menu(tela, jogador=None):
     tela.blit(imagem_menu, (0, 0))
 
     if jogador:
@@ -49,16 +32,16 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
     tela.blit(texto_pontos, (20, 20))
 
 
-def desenhar_gameover(tela, imagem_menu):
+def desenhar_gameover(tela, imagem_menu, imagem_gameover):
+    tela.fill((255, 0, 0))
     tela.blit(imagem_menu, (0, 0))
 
-    rect_imagem = imagem_menu.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-    tela.blit(imagem_menu, rect_imagem)
-
+    rect = imagem_gameover.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
+    tela.blit(imagem_gameover, rect)
+    
     botao_reiniciar.desenhar(tela)
     botao_menu.desenhar(tela)
     botao_sair_gameover.desenhar(tela)
-
 
 def desenhar_ranking(tela, top5):
     tela.blit(imagem_bg_rank, (0, 0))

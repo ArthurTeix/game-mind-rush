@@ -9,7 +9,7 @@ from game.elements.chao import GerenciadorChao
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
-from game.render import imagem_menu
+from game.render import imagem_menu, imagem_gameover
 
 # --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
 VELOCIDADE_CHAO = 6.5
@@ -35,8 +35,7 @@ class Motor:
         self.pontos = 0
         self.top5 = []
         self.estado = "menu"
-        self.imagem_gameover = pygame.image.load("./img/mensagem/MORREUMR.png").convert_alpha()
-
+        
         # jogador logado: None ou {"id": ..., "usuario": ...}
         self.jogador = None
         self.origem_login = "menu"   # para onde o botão "Voltar" do login leva
@@ -91,14 +90,14 @@ class Motor:
             self.capturar_eventos()
 
             if self.estado == "menu":
-                desenhar_menu(self.tela, imagem_menu, self.jogador)
+                desenhar_menu(self.tela, self.jogador)
 
             elif self.estado == "jogar":
                 self.atualizar_jogo()
                 desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos)
 
             elif self.estado == "gameover":
-                desenhar_gameover(self.tela, self.imagem_gameover)
+                desenhar_gameover(self.tela, imagem_menu, imagem_gameover)
 
             elif self.estado == "rank":
                 desenhar_ranking(self.tela, self.top5)

@@ -40,3 +40,6 @@ rect_sair_ranking = imagem_sair_ranking.get_rect(topleft=(110, 20))
 CAMINHO_BG_JOGO = './img/fundos/bg_jogo.png'
 imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
 imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
+
+CAMINHO_MENSAGEM_GAMEOVER = './img/mensagem/MORREUMR.png'
+imagem_gameover = pygame.image.load(CAMINHO_MENSAGEM_GAMEOVER)
