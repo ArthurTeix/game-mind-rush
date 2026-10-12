@@ -15,8 +15,8 @@ TITULO_JOGO = "Mind Rush"
 
 # fontes
 FONTE_TITULO = pygame.font.SysFont('arial', 60)
-FONTE_MENSAGEM =pygame.font.Font('./fontes/aseprite.ttf', 50)
-FONTE_PONTOS = pygame.font.SysFont('arial', 50)
+FONTE_MENSAGEM = pygame.font.Font('./fontes/aseprite.ttf', 50)
+FONTE_PONTOS = pygame.font.Font('./fontes/aseprite.ttf', 60)
 
 # taxa de quadros
 FPS = 60
