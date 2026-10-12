@@ -50,7 +50,7 @@ def desenhar_ranking(tela, top5):
     espacamento_ranking = int(ALTURA_TELA * 0.0943)
 
     for i, pontos in enumerate(top5):
-        ranking = FONTE_TITULO.render(f'{pontos}', 1, cores['rosa'])
+        ranking = FONTE_MENSAGEM.render(f'{pontos}', 1, cores['verde-logo'])
         rect_rank_text = ranking.get_rect(
             center=(x_caixa, y_primeira + espacamento_ranking * i)
         )
