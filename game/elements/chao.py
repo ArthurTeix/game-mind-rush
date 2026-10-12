@@ -6,11 +6,11 @@ from game.util.cores import cores
 class Chao:
     LARGURA_OBSTACULO = 110
     ALTURA_OBSTACULO = 50
-    MARGEM_INICIO = 140        # distância da ponta esquerda da plataforma
-    MARGEM_FIM = 160           # distância da ponta direita da plataforma
-    AFUNDAR_OBSTACULO = 2      # quanto a caixa "entra" na plataforma (cola no chão)
-    CHANCE_OBSTACULO = 70      # % de chance de nascer um obstáculo em cada bloco
-    _imagem_obstaculo = None   # carregada uma vez só e reaproveitada
+    MARGEM_INICIO = 140
+    MARGEM_FIM = 160
+    AFUNDAR_OBSTACULO = 2
+    CHANCE_OBSTACULO = 70
+    _imagem_obstaculo = None
 
     def __init__(self, x, y, largura, altura, velocidade):
         self.rect = pygame.Rect(x, y, largura, altura)
@@ -58,14 +58,14 @@ class Chao:
 
 
 class GerenciadorChao:
-    DEBUG_MEDIDAS = False   # liga/desliga com F3 durante o jogo (mostra largura e vão de cada bloco)
+    DEBUG_MEDIDAS = False
     ARQUIVO_LOG = './debug_chao.log'
     _fonte_debug = None
     _frame_debug = 0
 
     def __init__(self, largura_tela, altura_tela, velocidade,
-                altura_minima=380, altura_maxima=500,
-                largura_minima=300, largura_maxima=700,
+                altura_minima=400, altura_maxima=500,
+                largura_minima=400, largura_maxima=900, # 400 | 625 | 750 | 900
                 espaco_minimo=50, espaco_maximo=150):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
@@ -80,9 +80,6 @@ class GerenciadorChao:
 
         self.lista_chaos = []
 
-        # o primeiro bloco é fixo e previsível (não sorteado), para
-        # garantir uma "zona segura" onde o personagem nasce em pé
-        # (largo o bastante para o personagem correr um bom tempo antes do primeiro vão)
         largura_inicial = max(350, int(self.largura_tela * 0.6))
         primeiro_chao = self.criar_chao_fixo(x=0, largura=largura_inicial, altura=self.altura_maxima)
         self.altura_do_chao_inicial = primeiro_chao.rect.height

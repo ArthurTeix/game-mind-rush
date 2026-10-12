@@ -12,7 +12,7 @@ from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
 from game.render import imagem_menu, imagem_gameover
 
 # --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
-VELOCIDADE_CHAO = 6.5
+VELOCIDADE_CHAO = 8.5
 ESPACO_MINIMO = 150
 ESPACO_MAXIMO = 270
 ALTURA_PERSONAGEM = 80
@@ -35,7 +35,7 @@ class Motor:
         self.pontos = 0
         self.top5 = []
         self.estado = "menu"
-        
+
         # jogador logado: None ou {"id": ..., "usuario": ...}
         self.jogador = None
         self.origem_login = "menu"   # para onde o botão "Voltar" do login leva

@@ -1,7 +1,6 @@
 # Arquivo responsável por desenhar e renderizar as telas do jogo
 # (o pygame.display.update() é chamado uma única vez por frame, no motor.py)
 
-import pygame
 from game.util.cores import cores
 from game.ui.logo import logo_menu
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, imagem_gameover
@@ -38,7 +37,7 @@ def desenhar_gameover(tela, imagem_menu, imagem_gameover):
 
     rect = imagem_gameover.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
     tela.blit(imagem_gameover, rect)
-    
+
     botao_reiniciar.desenhar(tela)
     botao_menu.desenhar(tela)
     botao_sair_gameover.desenhar(tela)

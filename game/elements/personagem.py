@@ -17,8 +17,8 @@ class Personagem:
         self.pos_y = float(y)
         self.bottom_anterior = self.rect.bottom
         self.velocidade_y = 0
-        self.gravidade = 0.6
-        self.forca_salto = -16
+        self.gravidade = 1
+        self.forca_salto = -20
 
         # --- controle de estado ---
         self.no_chao = False
