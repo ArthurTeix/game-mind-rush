@@ -3,7 +3,7 @@
 
 from game.util.cores import cores
 from game.ui.logo import logo_menu
-from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, imagem_gameover
+from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, mensagem_gameover, imagem_gameover
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 
 def desenhar_menu(tela, jogador=None):
@@ -31,12 +31,12 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
     tela.blit(texto_pontos, (20, 20))
 
 
-def desenhar_gameover(tela, imagem_menu, imagem_gameover):
+def desenhar_gameover(tela, imagem_menu, mensagem_gameover):
     tela.fill((255, 0, 0))
     tela.blit(imagem_menu, (0, 0))
 
-    rect = imagem_gameover.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2))
-    tela.blit(imagem_gameover, rect)
+    rect = mensagem_gameover.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2.5))
+    tela.blit(mensagem_gameover, rect)
 
     botao_reiniciar.desenhar(tela)
     botao_menu.desenhar(tela)
