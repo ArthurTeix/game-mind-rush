@@ -4,7 +4,7 @@ import hmac
 import os
 from contextlib import closing
 
-CAMINHO_DB = './game/database/rank.db'
+CAMINHO_DB = './game/database/banco.db'
 ITERACOES_HASH = 200_000
 
 
@@ -44,7 +44,7 @@ def criar_tabelas():
             conn.execute("ALTER TABLE partidas ADD COLUMN jogador_id INTEGER")
 
 
-# ---------------------------------------------------------------- jogadores
+# jogadores
 
 def usuario_existe(usuario):
     with closing(_conectar()) as conn:
@@ -94,7 +94,7 @@ def autenticar(usuario, senha):
     return None
 
 
-# ----------------------------------------------------------------- pontuação
+# pontuação
 
 def salvar_pontuacao(jogador_id, pontuacao):
     with closing(_conectar()) as conn, conn:

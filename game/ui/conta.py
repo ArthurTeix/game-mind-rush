@@ -3,7 +3,7 @@
 import sqlite3
 import pygame
 
-from game.configuracoes import LARGURA_TELA, ALTURA_TELA
+from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_MENSAGEM
 from game.util.cores import cores
 from game.util import validacao
 from game.database import db
@@ -235,7 +235,7 @@ class TelaConfig:
     def desenhar(self, tela, jogador):
         tela.fill(cores['cinza-menu'])
 
-        titulo = FONTE_TITULO_TELA.render("Conta", True, cores['branco'])
+        titulo = FONTE_MENSAGEM.render("Conta", True, cores['branco'])
         tela.blit(titulo, titulo.get_rect(center=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.15))))
 
         if jogador:

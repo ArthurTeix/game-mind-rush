@@ -11,7 +11,7 @@ from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking,
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
 
 
-# --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
+# valores da partida (início e reinício usam os mesmos)
 VELOCIDADE_CHAO = 8.5
 ESPACO_MINIMO = 150
 ESPACO_MAXIMO = 270
