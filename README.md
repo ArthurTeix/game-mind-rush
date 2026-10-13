@@ -50,7 +50,6 @@ python main.py
 | Menu / Navegação | Menu principal e navegação entre as funcionalidades do jogo. |
 | Cadastro de Jogador | Cadastro de novos jogadores no sistema. |
 | Login | Autenticação do jogador para acesso ao sistema. |
-| Seleção de Personagem | Permite ao jogador escolher o personagem para a partida. |
 | Sistema de Jogo | Execução da partida com movimentação e desvio de obstáculos. |
 | Sistema de Pontuação | Pontuação atribuída ao jogador ao esquivar dos obstáculos durante a partida. |
 
