@@ -114,7 +114,7 @@ class Motor:
             # único update de tela por frame
             pygame.display.update()
 
-    # ------------------------------------------------------------ navegação
+    # navegação
 
     def abrir_login(self, mensagem=None, origem="menu", sucesso=False):
         self.origem_login = origem

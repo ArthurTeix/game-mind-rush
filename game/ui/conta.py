@@ -8,7 +8,7 @@ from game.util.cores import cores
 from game.util import validacao
 from game.database import db
 
-# --- aparência ---
+# aparência
 LARGURA_CAMPO = 520
 ALTURA_CAMPO = 52
 PASSO_CAMPO = 92                 # distância vertical entre um campo e o próximo
@@ -26,8 +26,7 @@ FONTE_BOTAO = pygame.font.SysFont('arial', 30, bold=True)
 FONTE_PEQUENA = pygame.font.SysFont('arial', 20)
 
 
-# ------------------------------------------------------------------ helpers
-
+# helpers
 def _permitido_usuario(char):
     return char.isascii() and (char.isalnum() or char == "_")
 
@@ -57,8 +56,7 @@ def _desenhar_mensagem(tela, texto, cor, y_topo):
         tela.blit(surf, surf.get_rect(midtop=(LARGURA_TELA // 2, y_topo + i * 30)))
 
 
-# ------------------------------------------------------------------- campos
-
+# campos
 class CampoTexto:
     def __init__(self, rotulo, x, y, largura=LARGURA_CAMPO, altura=ALTURA_CAMPO,
                 senha=False, max_len=32, permitido=None, mascara_data=False,
@@ -84,7 +82,7 @@ class CampoTexto:
         self.foco = False
         self.mostrar_senha = False
 
-    # --- entrada ---
+    # entrada
     @staticmethod
     def _formatar_data(digitos):
         resultado = digitos[:2]
@@ -197,7 +195,7 @@ class BotaoTexto:
         return self.rect.collidepoint(pos)
 
 
-# ------------------------------------------------------------------- telas
+# telas
 
 class TelaConfig:
     """Menu de conta: entrar, cadastrar-se, sair da conta e voltar."""

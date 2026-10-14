@@ -2,6 +2,7 @@ import pygame
 
 
 class Personagem:
+    # configurações necessárias para criar um Personagem
     def __init__(self, largura_tela, altura_tela, x, y, largura, altura, caminhos_imagens):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
@@ -11,9 +12,6 @@ class Personagem:
         self.rect = pygame.Rect(x, y, largura, altura)
 
         # --- física vertical ---
-        # pos_y guarda a posição como float: o Rect só aceita inteiros, e
-        # somar 0.6 direto no rect.y fazia o personagem "piscar" no chão
-        # (no_chao alternava True/False e o pulo falhava a cada 2 frames)
         self.pos_y = float(y)
         self.bottom_anterior = self.rect.bottom
         self.velocidade_y = 0
