@@ -6,12 +6,13 @@ from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREE
 from game.database.db import criar_tabelas, salvar_pontuacao, get_top5_pontuacao
 from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
-from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking, imagem_menu, imagem_gameover, mensagem_gameover
+from game.elements.obstaculo import GerenciadorObstaculos
+from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
+from game.render import imagem_menu, imagem_gameover, mensagem_gameover
 
-
-# valores da partida (início e reinício usam os mesmos)
+# --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
 VELOCIDADE_CHAO = 8.5
 ESPACO_MINIMO = 150
 ESPACO_MAXIMO = 270
@@ -80,6 +81,9 @@ class Motor:
             espaco_maximo=ESPACO_MAXIMO
         )
 
+        self.gerenciador_obstaculos = GerenciadorObstaculos()
+        self.gerenciador_obstaculos.ignorar(self.gerenciador_chao.lista_chaos[0])
+
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - ALTURA_PERSONAGEM
         self.personagem.resetar(X_PERSONAGEM, y_inicial)
 
@@ -94,7 +98,7 @@ class Motor:
 
             elif self.estado == "jogar":
                 self.atualizar_jogo()
-                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos)
+                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos, self.gerenciador_obstaculos)
 
             elif self.estado == "gameover":
                 desenhar_gameover(self.tela, imagem_gameover, mensagem_gameover)
@@ -114,7 +118,7 @@ class Motor:
             # único update de tela por frame
             pygame.display.update()
 
-    # navegação
+    # ------------------------------------------------------------ navegação
 
     def abrir_login(self, mensagem=None, origem="menu", sucesso=False):
         self.origem_login = origem
@@ -213,10 +217,12 @@ class Motor:
 
     def atualizar_jogo(self):
         chaos_removidos = self.gerenciador_chao.atualizar()
+        self.gerenciador_obstaculos.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade)
         self.pontos += chaos_removidos
 
         self.personagem.atualizar(self.gerenciador_chao.lista_chaos)
-
+        if any(self.personagem.rect.colliderect(o.rect) for o in self.gerenciador_obstaculos.lista):
+            self.personagem.vivo = False
         if not self.personagem.vivo:
             self.estado = "gameover"
             # visitantes jogam normalmente, mas a pontuação só é salva com login

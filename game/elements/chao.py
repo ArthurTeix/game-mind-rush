@@ -1,16 +1,9 @@
 import pygame
 from random import randint
 from game.util.cores import cores
-
+from game.elements.obstaculo import Obstaculo
 
 class Chao:
-    LARGURA_OBSTACULO = 110
-    ALTURA_OBSTACULO = 50
-    MARGEM_INICIO = 140
-    MARGEM_FIM = 160
-    AFUNDAR_OBSTACULO = 2
-    CHANCE_OBSTACULO = 70
-    _imagem_obstaculo = None
 
     def __init__(self, x, y, largura, altura, velocidade):
         self.rect = pygame.Rect(x, y, largura, altura)
@@ -19,34 +12,10 @@ class Chao:
         self.imagem = pygame.Surface((largura, altura))
         self.imagem.fill(cores['azul-jogo'])
 
-        # obstáculo em cima da plataforma (None = sem obstáculo)
         self.obstaculo = None
-
-    def criar_obstaculo(self):
-        largura = Chao.LARGURA_OBSTACULO
-        altura = Chao.ALTURA_OBSTACULO
-
-        # faixa em que o obstáculo pode nascer, respeitando as duas margens
-        x_min = self.rect.x + Chao.MARGEM_INICIO
-        x_max = self.rect.right - Chao.MARGEM_FIM - largura
-        if x_max < x_min:
-            return  # plataforma curta demais
-
-        if Chao._imagem_obstaculo is None:
-            imagem = pygame.image.load('./img/elementos/obstaculo.png').convert()
-            imagem.set_colorkey(imagem.get_at((0, 0)))
-            imagem = imagem.convert_alpha()
-            imagem = imagem.subsurface(imagem.get_bounding_rect()).copy()
-            Chao._imagem_obstaculo = pygame.transform.scale(imagem, (largura, altura))
-
-        x = randint(x_min, x_max)
-        y = self.rect.top - altura + Chao.AFUNDAR_OBSTACULO
-        self.obstaculo = pygame.Rect(x, y, largura, altura)
 
     def mover(self):
         self.rect.x -= self.velocidade
-        if self.obstaculo is not None:
-            self.obstaculo.x -= self.velocidade
 
     def saiu_da_tela(self):
         return self.rect.right <= 0
@@ -107,12 +76,8 @@ class GerenciadorChao:
         y = self.altura_tela - altura_sorteada
 
         novo_chao = Chao(x, y, largura_sorteada, altura_sorteada, self.velocidade)
+
         self.lista_chaos.append(novo_chao)
-
-        # chance (em %) de nascer um obstáculo em cima deste bloco
-        if randint(1, 100) <= Chao.CHANCE_OBSTACULO:
-            novo_chao.criar_obstaculo()
-
         return novo_chao
 
     def atualizar(self):

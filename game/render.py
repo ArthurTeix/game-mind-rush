@@ -21,10 +21,11 @@ def desenhar_menu(tela, jogador=None):
     botao_sair.desenhar(tela)
 
 
-def desenhar_jogo(tela, personagem, gerenciador_chao, pontos):
+def desenhar_jogo(tela, personagem, gerenciador_chao, pontos, gerenciador_obstaculos):
     tela.blit(imagem_bg_jogo, (0, 0))
 
     gerenciador_chao.desenhar(tela)
+    gerenciador_obstaculos.desenhar(tela)
     personagem.desenhar(tela)
 
     texto_pontos = FONTE_PONTOS.render(f"Pontos: {pontos}", True, cores['verde-logo'])
