@@ -54,12 +54,12 @@ class GerenciadorObstaculos:
         self._por_chao[chao] = None
 
     @property
-    def lista(self):
+    def lista_obstaculos(self):
         return [o for o in self._por_chao.values() if o is not None]    
 
     
     def atualizar(self, lista_chaos, velocidade):
-        for obstaculo in self.lista:
+        for obstaculo in self.lista_obstaculos:
             obstaculo.mover(velocidade)
 
         self._por_chao = {
@@ -75,5 +75,12 @@ class GerenciadorObstaculos:
 
 
     def desenhar(self, tela):
-        for obstaculo in self.lista:
+        for obstaculo in self.lista_obstaculos:
             obstaculo.desenhar(tela)
+
+
+    def remover(self, obstaculo):
+        for chao, atual in self._por_chao.items():
+            if atual is obstaculo:
+                self._por_chao[chao] = None
+                break

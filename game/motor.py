@@ -220,14 +220,13 @@ class Motor:
         self.gerenciador_obstaculos.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade)
         self.pontos += chaos_removidos
 
-        self.personagem.atualizar(self.gerenciador_chao.lista_chaos)
-        if any(self.personagem.rect.colliderect(o.rect) for o in self.gerenciador_obstaculos.lista):
-            self.personagem.vivo = False
+        self.personagem.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_obstaculos)
         if not self.personagem.vivo:
             self.estado = "gameover"
-            # visitantes jogam normalmente, mas a pontuação só é salva com login
-            if self.logado:
-                salvar_pontuacao(self.jogador["id"], self.pontos)
+
+        # A pontuação só é salva com login
+        if self.logado:
+            salvar_pontuacao(self.jogador["id"], self.pontos )
 
     def encerrar_jogo(self):
         self.rodando = False

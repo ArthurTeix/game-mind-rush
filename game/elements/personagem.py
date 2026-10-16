@@ -1,4 +1,5 @@
 import pygame
+from game.elements.obstaculo import GerenciadorObstaculos
 
 
 class Personagem:
@@ -24,6 +25,14 @@ class Personagem:
         self.no_chao = False
         self.vivo = True
 
+        self.vidas_max = 3
+        self.vidas = 3
+
+        self.x_inicial = x
+        self.y_inicial = y
+
+        self.invulnerabilidade = 0
+
         # --- animação (corrida) ---
         self.imagens = []
         for caminho in caminhos_imagens:
@@ -46,6 +55,8 @@ class Personagem:
         self.vivo = True
         self.frame_atual = 0
         self.contador_frames = 0
+        self.vidas = self.vidas_max
+        self.invulnerabilidade = 0
 
     def pular(self):
         if self.no_chao:
@@ -83,15 +94,30 @@ class Personagem:
             if hitbox.colliderect(chao.rect):
                 self.vivo = False
 
+    def perder_vida(self):
+        if self.invulnerabilidade > 0 or not self.vivo:
+            return
+
+        self.vidas -= 1
+
+        if self.vidas <= 0:
+            self.vidas = 0
+            self.vivo = False
+        else:
+            self.invulnerabilidade = 60
+
     def verificar_queda_fatal(self):
         if self.rect.y > self.altura_tela:
             self.vivo = False
 
-    def verificar_colisao_obstaculo(self, lista_de_chaos):
+    def verificar_colisao_obstaculo(self, gerenciador_obstaculos):
         hitbox = self.rect.inflate(-20, -10)
-        for chao in lista_de_chaos:
-            if chao.obstaculo is not None and hitbox.colliderect(chao.obstaculo):
-                self.vivo = False
+        
+        for obstaculo in gerenciador_obstaculos.lista_obstaculos:
+            if hitbox.colliderect(obstaculo.rect):
+                self.perder_vida()
+                gerenciador_obstaculos.remover(obstaculo)
+                break
 
     def animar(self):
         self.contador_frames += 1
@@ -100,12 +126,15 @@ class Personagem:
             self.frame_atual = (self.frame_atual + 1) % len(self.imagens)
             self.contador_frames = 0
 
-    def atualizar(self, lista_de_chaos):
+    def atualizar(self, lista_de_chaos, gerenciador_obstaculos):
         self.aplicar_gravidade()
         self.verificar_colisao_com_chao(lista_de_chaos)
-        self.verificar_colisao_obstaculo(lista_de_chaos)
+        self.verificar_colisao_obstaculo(gerenciador_obstaculos)
         self.animar()
         self.verificar_queda_fatal()
+
+        if self.invulnerabilidade > 0:
+            self.invulnerabilidade -= 1
 
     def desenhar(self, tela):
         tela.blit(self.imagens[self.frame_atual], self.rect)
