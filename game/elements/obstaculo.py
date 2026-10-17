@@ -7,7 +7,7 @@ class Obstaculo:
     MARGEM_INICIO = 140
     MARGEM_FIM = 160
     AFUNDAR = 2
-    CHANCE = 70
+    CHANCE = 75
     _imagem_obstaculo = None
 
     def __init__ (self, x, y):
