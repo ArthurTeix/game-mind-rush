@@ -1,6 +1,6 @@
 # cores
 cores = {
-    'amarelo': (255, 255, 0),
+    'amarelo': (233, 147, 0),
     'azul-ceu': (135, 206, 235),
     'azul-jogo':(12, 183, 242),
     'branco': (255, 255, 255),

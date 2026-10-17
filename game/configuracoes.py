@@ -49,3 +49,9 @@ imagem_gameover = pygame.transform.scale(imagem_gameover, (LARGURA_TELA, ALTURA_
 
 CAMINHO_MENSAGEM_GAMEOVER = './img/mensagem/MORREUMR.png'
 mensagem_gameover = pygame.image.load(CAMINHO_MENSAGEM_GAMEOVER)
+
+CAMINHO_ESTRELA = './img/elementos/estrela.png'
+imagem_estrela = pygame.image.load(CAMINHO_ESTRELA)
+
+CAMINHO_CORACAO = './img/elementos/coracao.png'
+imagem_coracao = pygame.image.load(CAMINHO_CORACAO)
