@@ -229,8 +229,8 @@ class Motor:
             self.estado = "gameover"
 
         # A pontuação só é salva com login
-        if self.logado:
-            salvar_pontuacao(self.jogador["id"], self.pontos )
+            if self.logado:
+                salvar_pontuacao(self.jogador["id"], self.pontos )
 
     def encerrar_jogo(self):
         self.rodando = False
