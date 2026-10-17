@@ -33,15 +33,8 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos, gerenciador_obstac
     texto_pontos = FONTE_PONTOS.render(f"{pontos}", True, cores['amarelo'])
     tela.blit(texto_pontos, (110, 30))
 
-    if personagem.vidas >= 3:
-        tela.blit(imagem_coracao, (20, 100))
-        tela.blit(imagem_coracao, (60, 100))
-        tela.blit(imagem_coracao, (100, 100))
-    elif personagem.vidas >= 2:
-        tela.blit(imagem_coracao, (20, 100))
-        tela.blit(imagem_coracao, (60, 100))
-    else:
-        tela.blit(imagem_coracao, (20, 100))
+    for i in range(max(personagem.vidas, 0)):
+        tela.blit(imagem_coracao, (20 + i * 40, 100))
 
 def desenhar_gameover(tela, imagem_menu, mensagem_gameover):
     tela.fill((255, 0, 0))
