@@ -1,6 +1,5 @@
 import pygame
 from random import randint
-from game.util.cores import cores
 
 class Obstaculo:
     LARGURA = 110

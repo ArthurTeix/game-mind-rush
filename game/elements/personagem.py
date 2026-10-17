@@ -1,5 +1,6 @@
 import pygame
 from game.elements.obstaculo import GerenciadorObstaculos
+from game.elements.moeda import Moeda, GerenciadorMoeda
 
 
 class Personagem:
@@ -106,6 +107,13 @@ class Personagem:
         else:
             self.invulnerabilidade = 60
 
+    def ganhar_vida(self):
+        if not self.vivo:
+            return
+
+        self.vidas += 1
+        self.vidas = min(self.vidas + 1, self.vidas_max)
+
     def verificar_queda_fatal(self):
         if self.rect.y > self.altura_tela:
             self.vivo = False
@@ -119,6 +127,15 @@ class Personagem:
                 gerenciador_obstaculos.remover(obstaculo)
                 break
 
+    def verificar_colisao_moeda(self, gerenciador_moeda):
+        hitbox = self.rect.inflate(-20, -10)
+
+        for moeda in gerenciador_moeda.lista_moeda:
+            if hitbox.colliderect(moeda.rect):
+                self.ganhar_vida()
+                gerenciador_moeda.remover(moeda)
+                break
+
     def animar(self):
         self.contador_frames += 1
 
@@ -126,10 +143,11 @@ class Personagem:
             self.frame_atual = (self.frame_atual + 1) % len(self.imagens)
             self.contador_frames = 0
 
-    def atualizar(self, lista_de_chaos, gerenciador_obstaculos):
+    def atualizar(self, lista_de_chaos, gerenciador_obstaculos, gerenciador_moeda):
         self.aplicar_gravidade()
         self.verificar_colisao_com_chao(lista_de_chaos)
         self.verificar_colisao_obstaculo(gerenciador_obstaculos)
+        self.verificar_colisao_moeda(gerenciador_moeda)
         self.animar()
         self.verificar_queda_fatal()
 

@@ -21,11 +21,12 @@ def desenhar_menu(tela, jogador=None):
     botao_sair.desenhar(tela)
 
 
-def desenhar_jogo(tela, personagem, gerenciador_chao, pontos, gerenciador_obstaculos):
+def desenhar_jogo(tela, personagem, gerenciador_chao, pontos, gerenciador_obstaculos, gerenciador_moeda):
     tela.blit(imagem_bg_jogo, (0, 0))
 
     gerenciador_chao.desenhar(tela)
     gerenciador_obstaculos.desenhar(tela)
+    gerenciador_moeda.desenhar(tela)
     personagem.desenhar(tela)
 
     tela.blit(imagem_estrela, (20, 20))
