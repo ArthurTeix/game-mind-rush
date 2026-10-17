@@ -5,7 +5,7 @@ class Moeda:
     LARGURA = 50
     ALTURA = 50
     ALTURA_ACIMA = 20 
-    CHANCE = 70
+    CHANCE = 30
     _imagem_moeda = None
 
     def __init__(self, x, y):
