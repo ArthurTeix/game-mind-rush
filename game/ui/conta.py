@@ -18,12 +18,20 @@ COR_PLACEHOLDER = (110, 110, 110)
 COR_BOTAO_NEUTRO = (90, 90, 90)
 LARGURA_MAX_MSG = min(int(LARGURA_TELA * 0.8), 900)
 
+# regras ao vivo (abaixo de cada campo do cadastro)
+ALTURA_REGRAS = 24               # espaço reservado sob o campo para a linha de regras
+RAIO_MARCADOR = 5
+ESPACO_ENTRE_REGRAS = 18
+COR_REGRA_OK = cores['verde']
+COR_REGRA_PENDENTE = cores['vermelho']
+
 FONTE_TITULO_TELA = pygame.font.SysFont('arial', 56)
 FONTE_ROTULO = pygame.font.SysFont('arial', 24)
 FONTE_CAMPO = pygame.font.SysFont('arial', 30)
 FONTE_MSG = pygame.font.SysFont('arial', 26)
 FONTE_BOTAO = pygame.font.SysFont('arial', 30, bold=True)
 FONTE_PEQUENA = pygame.font.SysFont('arial', 20)
+FONTE_REGRA = pygame.font.SysFont('arial', 18)
 
 
 # helpers
@@ -33,6 +41,35 @@ def _permitido_usuario(char):
 
 def _permitido_email(char):
     return not char.isspace()
+
+
+def _regras_usuario_ao_vivo(texto):
+    """Regras de formato + se o nome está livre (só consulta o banco com o formato certo)."""
+    regras = validacao.regras_usuario(texto)
+
+    if all(ok for _, ok in regras):
+        try:
+            em_uso = db.usuario_existe(texto)
+        except sqlite3.Error:
+            em_uso = True   # sem conseguir consultar, não marca como disponível
+        regras.append(("já está em uso" if em_uso else "disponível", not em_uso))
+    else:
+        regras.append(("disponível", False))
+    return regras
+
+
+def _regras_email_ao_vivo(texto):
+    regras = validacao.regras_email(texto)
+
+    if all(ok for _, ok in regras):
+        try:
+            em_uso = db.email_existe(texto)
+        except sqlite3.Error:
+            em_uso = True
+        regras.append(("já cadastrado" if em_uso else "ainda não cadastrado", not em_uso))
+    else:
+        regras.append(("ainda não cadastrado", False))
+    return regras
 
 
 def _quebrar_linhas(texto, fonte, largura_max):
@@ -60,7 +97,7 @@ def _desenhar_mensagem(tela, texto, cor, y_topo):
 class CampoTexto:
     def __init__(self, rotulo, x, y, largura=LARGURA_CAMPO, altura=ALTURA_CAMPO,
                 senha=False, max_len=32, permitido=None, mascara_data=False,
-                placeholder=""):
+                placeholder="", regras=None):
         self.rotulo = rotulo
         self.rect = pygame.Rect(x, y, largura, altura)
         self.senha = senha
@@ -68,6 +105,12 @@ class CampoTexto:
         self.permitido = permitido
         self.mascara_data = mascara_data
         self.placeholder = placeholder
+
+        # regras ao vivo: função(texto) -> lista de (texto_da_regra, atendida)
+        self.regras = regras
+        self.regras_forcadas = False     # True depois de tentar enviar: mostra as regras mesmo com o campo vazio
+        self._cache_texto = None         # evita recalcular (e consultar o banco) a cada frame
+        self._cache_regras = []
 
         self.texto = ""
         self.foco = False
@@ -81,6 +124,18 @@ class CampoTexto:
         self.texto = ""
         self.foco = False
         self.mostrar_senha = False
+        self.regras_forcadas = False
+        self._cache_texto = None
+
+    # regras
+    def regras_atuais(self):
+        """Lista de (texto, atendida) para o texto de agora; só recalcula quando o texto muda."""
+        if self.regras is None:
+            return []
+        if self._cache_texto != self.texto:
+            self._cache_regras = self.regras(self.texto)
+            self._cache_texto = self.texto
+        return self._cache_regras
 
     # entrada
     @staticmethod
@@ -127,6 +182,35 @@ class CampoTexto:
                 self._inserir(evento.unicode)
 
     # --- desenho ---
+    def _desenhar_regras(self, tela):
+        """Regras em linha, logo abaixo do campo: vermelhas até serem atendidas, depois verdes."""
+        if not self.regras:
+            return
+        # só aparecem quando o jogador começa a interagir com o campo
+        if not (self.foco or self.texto or self.regras_forcadas):
+            return
+
+        x = self.rect.x
+        y = self.rect.bottom + 6
+        for texto, atendida in self.regras_atuais():
+            cor = COR_REGRA_OK if atendida else COR_REGRA_PENDENTE
+            surf = FONTE_REGRA.render(texto, True, cor)
+            largura_item = RAIO_MARCADOR * 2 + 6 + surf.get_width()
+
+            # se não couber na linha, continua na de baixo
+            if x + largura_item > self.rect.right and x > self.rect.x:
+                x = self.rect.x
+                y += surf.get_height() + 2
+
+            centro = (x + RAIO_MARCADOR, y + surf.get_height() // 2)
+            if atendida:
+                pygame.draw.circle(tela, cor, centro, RAIO_MARCADOR)          # cheio = ok
+            else:
+                pygame.draw.circle(tela, cor, centro, RAIO_MARCADOR, 2)       # vazio = falta
+            tela.blit(surf, (x + RAIO_MARCADOR * 2 + 6, y))
+
+            x += largura_item + ESPACO_ENTRE_REGRAS
+
     def desenhar(self, tela):
         rotulo = FONTE_ROTULO.render(self.rotulo, True, cores['branco'])
         tela.blit(rotulo, (self.rect.x, self.rect.y - 28))
@@ -173,6 +257,8 @@ class CampoTexto:
             legenda = "Ocultar" if self.mostrar_senha else "Mostrar"
             surf = FONTE_PEQUENA.render(legenda, True, cores['branco'])
             tela.blit(surf, surf.get_rect(center=self.rect_olho.center))
+
+        self._desenhar_regras(tela)
 
 
 class BotaoTexto:
@@ -260,10 +346,10 @@ class _TelaFormulario:
         self.botao_principal = None
         self.botao_voltar = None
 
-    def _criar_rodape(self, texto_principal):
-        """Posiciona mensagem e botões logo abaixo do último campo."""
+    def _criar_rodape(self, texto_principal, altura_extra=0):
+        """Posiciona mensagem e botões logo abaixo do último campo (e das regras dele, se houver)."""
         cx = LARGURA_TELA // 2
-        self.y_mensagem = self.campos[-1].rect.bottom + 14
+        self.y_mensagem = self.campos[-1].rect.bottom + 14 + altura_extra
         y_botoes = self.y_mensagem + 95
         self.botao_principal = BotaoTexto(texto_principal, (cx - 140, y_botoes))
         self.botao_voltar = BotaoTexto("Voltar", (cx + 140, y_botoes), cor=COR_BOTAO_NEUTRO)
@@ -301,8 +387,14 @@ class _TelaFormulario:
         raise NotImplementedError
 
     def tratar_evento(self, evento):
+        textos_antes = [c.texto for c in self.campos]
+
         for campo in self.campos:
             campo.tratar_evento(evento)
+
+        # o jogador voltou a digitar: a mensagem de erro anterior já não vale
+        if [c.texto for c in self.campos] != textos_antes:
+            self.mensagem = ""
 
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_TAB:
@@ -372,24 +464,41 @@ class TelaCadastro(_TelaFormulario):
 
     def __init__(self):
         super().__init__()
-        self.y_titulo = int(ALTURA_TELA * 0.08)
+
+        # cada campo agora reserva uma linha extra para as regras ao vivo
+        passo = PASSO_CAMPO + ALTURA_REGRAS
+        espaco_formulario = ALTURA_CAMPO + 3 * passo + ALTURA_REGRAS     # do 1º campo ao fim das regras do último
+        altura_rodape = 14 + 95 + 28                                     # mensagem + botões
+        margem_inferior = 10
+
+        # sobe o formulário se a tela for baixa, para tudo caber
+        y0 = min(int(ALTURA_TELA * 0.19), ALTURA_TELA - margem_inferior - espaco_formulario - altura_rodape)
+        y0 = max(y0, 90)
+        self.y_titulo = min(int(ALTURA_TELA * 0.08), y0 - 62)
         x = (LARGURA_TELA - LARGURA_CAMPO) // 2
-        y0 = int(ALTURA_TELA * 0.19)
 
         self.campo_usuario = CampoTexto("Nome de usuário", x, y0,
-                                        max_len=16, permitido=_permitido_usuario)
-        self.campo_email = CampoTexto("E-mail", x, y0 + PASSO_CAMPO,
-                                        max_len=60, permitido=_permitido_email)
-        self.campo_senha = CampoTexto("Senha", x, y0 + 2 * PASSO_CAMPO, senha=True)
-        self.campo_nascimento = CampoTexto("Data de nascimento", x, y0 + 3 * PASSO_CAMPO,
-                                            mascara_data=True, placeholder="DD/MM/AAAA")
+                                        max_len=16, permitido=_permitido_usuario,
+                                        regras=_regras_usuario_ao_vivo)
+        self.campo_email = CampoTexto("E-mail", x, y0 + passo,
+                                        max_len=60, permitido=_permitido_email,
+                                        regras=_regras_email_ao_vivo)
+        self.campo_senha = CampoTexto("Senha", x, y0 + 2 * passo, senha=True,
+                                        regras=validacao.regras_senha)
+        self.campo_nascimento = CampoTexto("Data de nascimento", x, y0 + 3 * passo,
+                                            mascara_data=True, placeholder="DD/MM/AAAA",
+                                            regras=validacao.regras_data_nascimento)
         self.campos = [self.campo_usuario, self.campo_email,
                         self.campo_senha, self.campo_nascimento]
 
-        self._criar_rodape("Cadastrar")
+        self._criar_rodape("Cadastrar", altura_extra=ALTURA_REGRAS)
         self.usuario_criado = ""
 
     def enviar(self):
+        # ao tentar enviar, mostra as regras de todos os campos (inclusive os vazios)
+        for campo in self.campos:
+            campo.regras_forcadas = True
+
         usuario = self.campo_usuario.texto.strip()
         email = self.campo_email.texto.strip()
         senha = self.campo_senha.texto
