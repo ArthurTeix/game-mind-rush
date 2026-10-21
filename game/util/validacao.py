@@ -1,9 +1,9 @@
 # Validações do cadastro (sem pygame, só regras)
 #
 # Dois grupos de funções:
-#   validar_*  -> usadas ao clicar em "Cadastrar": retornam uma mensagem de erro (str) ou None.
-#   regras_*   -> usadas AO VIVO enquanto o jogador digita: retornam uma lista de
-#                 (texto_da_regra, atendida) para a tela pintar de vermelho/verde.
+# validar_* -> usadas ao clicar em "Cadastrar": retornam uma mensagem de erro (str) ou None.
+# regras_*  -> usadas AO VIVO enquanto o jogador digita: retornam uma lista de
+#              (texto_da_regra, atendida) para a tela pintar de vermelho/verde.
 
 import re
 from datetime import datetime, date
@@ -42,6 +42,12 @@ def validar_senha(senha):
     return None
 
 
+def validar_repetir_senha(senha, repetir_senha):
+    if senha != repetir_senha:
+        return "As senhas não coincidem."
+    return None
+
+
 def validar_data_nascimento(texto):
     """Retorna (erro, data_iso). Se houver erro, data_iso é None."""
     if len(texto) != 10:
@@ -61,7 +67,7 @@ def validar_data_nascimento(texto):
 
 
 # ------------------------------------------------------------- ao vivo
-# Mantenha os textos curtos: cada campo mostra as suas regras em uma linha só.
+# Mantenha os textos curtos: cada campo mostra suas regras em uma linha só.
 
 def regras_usuario(usuario):
     return [
@@ -81,6 +87,12 @@ def regras_senha(senha):
         ("mínimo 8 caracteres", len(senha) >= 8),
         ("1 letra maiúscula", any(c.isupper() for c in senha)),
         ("1 número", any(c.isdigit() for c in senha)),
+    ]
+
+
+def regras_repetir_senha(senha, repetir_senha):
+    return [
+        ("as senhas coincidem", bool(repetir_senha) and senha == repetir_senha),
     ]
 
 
