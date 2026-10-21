@@ -179,9 +179,13 @@ class Motor:
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 self.encerrar_jogo()
 
-            if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_SPACE, pygame.K_UP):
+            if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
                 if self.estado == "jogar":
                     self.personagem.pular()
+
+            if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_s, pygame.K_DOWN):
+                if self.estado == "jogar":
+                    self.personagem.descer()
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if self.estado == "menu":

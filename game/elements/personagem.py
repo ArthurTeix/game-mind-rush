@@ -120,7 +120,7 @@ class Personagem:
 
     def verificar_colisao_obstaculo(self, gerenciador_obstaculos):
         hitbox = self.rect.inflate(-20, -10)
-        
+
         for obstaculo in gerenciador_obstaculos.lista_obstaculos:
             if hitbox.colliderect(obstaculo.rect):
                 self.perder_vida()
