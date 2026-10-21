@@ -22,6 +22,11 @@ class Personagem:
         self.gravidade = 1
         self.forca_salto = -20
 
+        # --- mergulho rápido (estilo Subway Surfers) ---
+        self.velocidade_mergulho = 28   # velocidade para baixo ao mergulhar
+        self.velocidade_terminal = 30   # limite de velocidade de queda
+        self.mergulhando = False
+
         # --- controle de estado ---
         self.no_chao = False
         self.vivo = True
@@ -53,6 +58,7 @@ class Personagem:
         self.bottom_anterior = self.rect.bottom
         self.velocidade_y = 0
         self.no_chao = False
+        self.mergulhando = False
         self.vivo = True
         self.frame_atual = 0
         self.contador_frames = 0
@@ -63,12 +69,21 @@ class Personagem:
         if self.no_chao:
             self.velocidade_y = self.forca_salto
             self.no_chao = False
+            self.mergulhando = False
+
+    def descer(self):
+        """Mergulho rápido: só funciona no ar. Corta a subida na hora
+        (se estiver subindo) e joga o personagem para o chão."""
+        if not self.no_chao and not self.mergulhando:
+            self.velocidade_y = self.velocidade_mergulho
+            self.mergulhando = True
 
     def aplicar_gravidade(self):
         # guarda onde os pés estavam ANTES de mover neste frame
         self.bottom_anterior = self.rect.bottom
 
         self.velocidade_y += self.gravidade
+        self.velocidade_y = min(self.velocidade_y, self.velocidade_terminal)
         self.pos_y += self.velocidade_y
         self.rect.y = round(self.pos_y)
 
@@ -79,7 +94,20 @@ class Personagem:
         hitbox = self.rect.inflate(-20, -10)
 
         for chao in lista_de_chaos:
-            if not self.rect.colliderect(chao.rect):
+            sobrepoe_horizontal = (
+                self.rect.right > chao.rect.left and self.rect.left < chao.rect.right
+            )
+
+            # com o mergulho a velocidade é alta, então o personagem pode
+            # "pular" por cima da colisão num único frame. Por isso também
+            # checamos se os pés cruzaram o topo do bloco neste frame.
+            cruzou_topo = (
+                sobrepoe_horizontal
+                and self.bottom_anterior <= chao.rect.top
+                and self.rect.bottom >= chao.rect.top
+            )
+
+            if not self.rect.colliderect(chao.rect) and not cruzou_topo:
                 continue
 
             # pousar em cima: está descendo e os pés estavam acima do
@@ -89,6 +117,7 @@ class Personagem:
                 self.pos_y = float(self.rect.y)
                 self.velocidade_y = 0
                 self.no_chao = True
+                self.mergulhando = False
                 break
 
             # qualquer outra batida (lateral ou por baixo) é fatal
@@ -111,7 +140,7 @@ class Personagem:
         if not self.vivo:
             return
 
-        self.vidas += 1
+        # (antes somava +1 e depois +1 de novo dentro do min, dando 2 vidas)
         self.vidas = min(self.vidas + 1, self.vidas_max)
 
     def verificar_queda_fatal(self):
