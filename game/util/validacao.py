@@ -1,12 +1,19 @@
 # Validações do cadastro (sem pygame, só regras)
-# Cada função retorna uma mensagem de erro (str) ou None quando está tudo certo.
+#
+# Dois grupos de funções:
+#   validar_*  -> usadas ao clicar em "Cadastrar": retornam uma mensagem de erro (str) ou None.
+#   regras_*   -> usadas AO VIVO enquanto o jogador digita: retornam uma lista de
+#                 (texto_da_regra, atendida) para a tela pintar de vermelho/verde.
 
 import re
 from datetime import datetime, date
 
 REGEX_USUARIO = re.compile(r"^[A-Za-z0-9_]{3,16}$")
+REGEX_USUARIO_CARACTERES = re.compile(r"^[A-Za-z0-9_]+$")
 REGEX_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
 
+
+# ------------------------------------------------------------ ao enviar
 
 def validar_usuario(usuario):
     if not REGEX_USUARIO.match(usuario):
@@ -51,3 +58,36 @@ def validar_data_nascimento(texto):
         return "Data de nascimento inválida. Confira o ano.", None
 
     return None, data.isoformat()
+
+
+# ------------------------------------------------------------- ao vivo
+# Mantenha os textos curtos: cada campo mostra as suas regras em uma linha só.
+
+def regras_usuario(usuario):
+    return [
+        ("3 a 16 caracteres", 3 <= len(usuario) <= 16),
+        ("letras, números e _", REGEX_USUARIO_CARACTERES.match(usuario) is not None),
+    ]
+
+
+def regras_email(email):
+    return [
+        ("formato nome@dominio.com", REGEX_EMAIL.match(email) is not None),
+    ]
+
+
+def regras_senha(senha):
+    return [
+        ("mínimo 8 caracteres", len(senha) >= 8),
+        ("1 letra maiúscula", any(c.isupper() for c in senha)),
+        ("1 número", any(c.isdigit() for c in senha)),
+    ]
+
+
+def regras_data_nascimento(texto):
+    completa = len(texto) == 10
+    valida = completa and validar_data_nascimento(texto)[0] is None
+    return [
+        ("formato DD/MM/AAAA", completa),
+        ("data real e não futura", valida),
+    ]
