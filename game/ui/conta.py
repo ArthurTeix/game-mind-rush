@@ -1,8 +1,5 @@
-# Telas de conta: configurações, login e cadastro (feitas só com pygame)
-
 import sqlite3
 import pygame
-
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_MENSAGEM
 from game.util.cores import cores
 from game.util import validacao
@@ -24,7 +21,6 @@ RAIO_MARCADOR = 5
 ESPACO_ENTRE_REGRAS = 18
 COR_REGRA_OK = cores['verde']
 COR_REGRA_PENDENTE = cores['vermelho']
-
 FONTE_TITULO_TELA = pygame.font.SysFont('arial', 56)
 FONTE_ROTULO = pygame.font.SysFont('arial', 24)
 FONTE_CAMPO = pygame.font.SysFont('arial', 30)
@@ -33,20 +29,16 @@ FONTE_BOTAO = pygame.font.SysFont('arial', 30, bold=True)
 FONTE_PEQUENA = pygame.font.SysFont('arial', 20)
 FONTE_REGRA = pygame.font.SysFont('arial', 18)
 
-
 # helpers
 def _permitido_usuario(char):
     return char.isascii() and (char.isalnum() or char == "_")
 
-
 def _permitido_email(char):
     return not char.isspace()
-
 
 def _regras_usuario_ao_vivo(texto):
     """Regras de formato + se o nome está livre (só consulta o banco com o formato certo)."""
     regras = validacao.regras_usuario(texto)
-
     if all(ok for _, ok in regras):
         try:
             em_uso = db.usuario_existe(texto)
@@ -57,10 +49,8 @@ def _regras_usuario_ao_vivo(texto):
         regras.append(("disponível", False))
     return regras
 
-
 def _regras_email_ao_vivo(texto):
     regras = validacao.regras_email(texto)
-
     if all(ok for _, ok in regras):
         try:
             em_uso = db.email_existe(texto)
@@ -70,7 +60,6 @@ def _regras_email_ao_vivo(texto):
     else:
         regras.append(("ainda não cadastrado", False))
     return regras
-
 
 def _quebrar_linhas(texto, fonte, largura_max):
     linhas, atual = [], ""
@@ -86,12 +75,10 @@ def _quebrar_linhas(texto, fonte, largura_max):
         linhas.append(atual)
     return linhas
 
-
 def _desenhar_mensagem(tela, texto, cor, y_topo):
     for i, linha in enumerate(_quebrar_linhas(texto, FONTE_MSG, LARGURA_MAX_MSG)):
         surf = FONTE_MSG.render(linha, True, cor)
         tela.blit(surf, surf.get_rect(midtop=(LARGURA_TELA // 2, y_topo + i * 30)))
-
 
 # campos
 class CampoTexto:
@@ -105,17 +92,14 @@ class CampoTexto:
         self.permitido = permitido
         self.mascara_data = mascara_data
         self.placeholder = placeholder
-
         # regras ao vivo: função(texto) -> lista de (texto_da_regra, atendida)
         self.regras = regras
         self.regras_forcadas = False     # True depois de tentar enviar: mostra as regras mesmo com o campo vazio
         self._cache_texto = None         # evita recalcular (e consultar o banco) a cada frame
         self._cache_regras = []
-
         self.texto = ""
         self.foco = False
         self.mostrar_senha = False
-
         self.rect_olho = None
         if senha:
             self.rect_olho = pygame.Rect(self.rect.right - 108, self.rect.y + 8, 100, altura - 16)
@@ -154,7 +138,6 @@ class CampoTexto:
                 if len(digitos) < 8:
                     self.texto = self._formatar_data(digitos + char)
             return
-
         if len(self.texto) >= self.max_len:
             return
         if self.permitido and not self.permitido(char):
@@ -174,7 +157,6 @@ class CampoTexto:
                 self.foco = True
             else:
                 self.foco = self.rect.collidepoint(evento.pos)
-
         elif evento.type == pygame.KEYDOWN and self.foco:
             if evento.key == pygame.K_BACKSPACE:
                 self._apagar()
@@ -189,52 +171,43 @@ class CampoTexto:
         # só aparecem quando o jogador começa a interagir com o campo
         if not (self.foco or self.texto or self.regras_forcadas):
             return
-
         x = self.rect.x
         y = self.rect.bottom + 6
         for texto, atendida in self.regras_atuais():
             cor = COR_REGRA_OK if atendida else COR_REGRA_PENDENTE
             surf = FONTE_REGRA.render(texto, True, cor)
             largura_item = RAIO_MARCADOR * 2 + 6 + surf.get_width()
-
             # se não couber na linha, continua na de baixo
             if x + largura_item > self.rect.right and x > self.rect.x:
                 x = self.rect.x
                 y += surf.get_height() + 2
-
             centro = (x + RAIO_MARCADOR, y + surf.get_height() // 2)
             if atendida:
                 pygame.draw.circle(tela, cor, centro, RAIO_MARCADOR)          # cheio = ok
             else:
                 pygame.draw.circle(tela, cor, centro, RAIO_MARCADOR, 2)       # vazio = falta
             tela.blit(surf, (x + RAIO_MARCADOR * 2 + 6, y))
-
             x += largura_item + ESPACO_ENTRE_REGRAS
 
     def desenhar(self, tela):
         rotulo = FONTE_ROTULO.render(self.rotulo, True, cores['branco'])
         tela.blit(rotulo, (self.rect.x, self.rect.y - 28))
-
         pygame.draw.rect(tela, COR_FUNDO_CAMPO, self.rect, border_radius=8)
         borda = cores['azul-jogo'] if self.foco else COR_BORDA
         pygame.draw.rect(tela, borda, self.rect, 2, border_radius=8)
-
         x_texto = self.rect.x + 10
         area_largura = self.rect.width - 20
         if self.rect_olho:
             area_largura -= self.rect_olho.width + 10
-
         if self.senha and not self.mostrar_senha:
             exibido = "*" * len(self.texto)
         else:
             exibido = self.texto
-
         largura_texto = 0
         if exibido:
             surf = FONTE_CAMPO.render(exibido, True, cores['branco'])
             largura_texto = surf.get_width()
             y = self.rect.centery - surf.get_height() // 2
-
             if largura_texto > area_largura:
                 # texto maior que o campo: mostra só o final (onde o cursor está)
                 recorte = pygame.Rect(largura_texto - area_largura, 0, area_largura, surf.get_height())
@@ -245,21 +218,17 @@ class CampoTexto:
         elif self.placeholder:
             surf = FONTE_CAMPO.render(self.placeholder, True, COR_PLACEHOLDER)
             tela.blit(surf, (x_texto, self.rect.centery - surf.get_height() // 2))
-
         # cursor piscando
         if self.foco and (pygame.time.get_ticks() // 500) % 2 == 0:
             x = x_texto + largura_texto + 2
             pygame.draw.line(tela, cores['branco'], (x, self.rect.y + 10), (x, self.rect.bottom - 10), 2)
-
         # botão "mostrar/ocultar" da senha
         if self.rect_olho:
             pygame.draw.rect(tela, COR_BORDA, self.rect_olho, 1, border_radius=6)
             legenda = "Ocultar" if self.mostrar_senha else "Mostrar"
             surf = FONTE_PEQUENA.render(legenda, True, cores['branco'])
             tela.blit(surf, surf.get_rect(center=self.rect_olho.center))
-
         self._desenhar_regras(tela)
-
 
 class BotaoTexto:
     def __init__(self, texto, centro, largura=240, altura=56, cor=None):
@@ -267,25 +236,19 @@ class BotaoTexto:
         self.cor = cor or cores['azul-jogo']
         self.rect = pygame.Rect(0, 0, largura, altura)
         self.rect.center = centro
-
     def desenhar(self, tela):
         cor = self.cor
         if self.rect.collidepoint(pygame.mouse.get_pos()):
             cor = tuple(min(255, c + 35) for c in cor)
-
         pygame.draw.rect(tela, cor, self.rect, border_radius=10)
         surf = FONTE_BOTAO.render(self.texto, True, cores['branco'])
         tela.blit(surf, surf.get_rect(center=self.rect.center))
-
     def clicado(self, pos):
         return self.rect.collidepoint(pos)
-
-
 # telas
 
 class TelaConfig:
     """Menu de conta: entrar, cadastrar-se, sair da conta e voltar."""
-
     def __init__(self):
         cx = LARGURA_TELA // 2
         self.y_inicial = int(ALTURA_TELA * 0.38)
@@ -301,7 +264,6 @@ class TelaConfig:
             lista = [("login", self.botao_login),
                     ("cadastro", self.botao_cadastro),
                     ("voltar", self.botao_voltar)]
-
         for i, (_, botao) in enumerate(lista):
             botao.rect.centery = self.y_inicial + i * 80
         return lista
@@ -309,7 +271,6 @@ class TelaConfig:
     def tratar_evento(self, evento, jogador):
         if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             return "voltar"
-
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
             for acao, botao in self._botoes_ativos(jogador):
                 if botao.clicado(evento.pos):
@@ -318,25 +279,20 @@ class TelaConfig:
 
     def desenhar(self, tela, jogador):
         tela.fill(cores['cinza-menu'])
-
         titulo = FONTE_MENSAGEM.render("Conta", True, cores['branco'])
         tela.blit(titulo, titulo.get_rect(center=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.15))))
-
         if jogador:
             status = f"Conectado como {jogador['usuario']}"
         else:
             status = "Você ainda não está conectado"
         surf = FONTE_MSG.render(status, True, cores['azul-jogo'])
         tela.blit(surf, surf.get_rect(center=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.25))))
-
         for _, botao in self._botoes_ativos(jogador):
             botao.desenhar(tela)
-
 
 class _TelaFormulario:
     """Base de login e cadastro: campos, Tab/Enter/Esc, mensagem e botões."""
     TITULO = ""
-
     def __init__(self):
         self.campos = []
         self.mensagem = ""
@@ -388,14 +344,15 @@ class _TelaFormulario:
 
     def tratar_evento(self, evento):
         textos_antes = [c.texto for c in self.campos]
-
         for campo in self.campos:
             campo.tratar_evento(evento)
-
         # o jogador voltou a digitar: a mensagem de erro anterior já não vale
         if [c.texto for c in self.campos] != textos_antes:
             self.mensagem = ""
-
+            if hasattr(self, "campo_repetir_senha"):
+                indice_senha = self.campos.index(self.campo_senha)
+                if self.campo_senha.texto != textos_antes[indice_senha]:
+                    self.campo_repetir_senha._cache_texto = None
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_TAB:
                 self._mover_foco(-1 if evento.mod & pygame.KMOD_SHIFT else 1)
@@ -403,80 +360,61 @@ class _TelaFormulario:
                 return self.enviar()
             elif evento.key == pygame.K_ESCAPE:
                 return "voltar"
-
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
             if self.botao_principal.clicado(evento.pos):
                 return self.enviar()
             if self.botao_voltar.clicado(evento.pos):
                 return "voltar"
-
         return None
 
     def desenhar(self, tela):
         tela.fill(cores['cinza-menu'])
-
         titulo = FONTE_TITULO_TELA.render(self.TITULO, True, cores['branco'])
         tela.blit(titulo, titulo.get_rect(center=(LARGURA_TELA // 2, self.y_titulo)))
-
         for campo in self.campos:
             campo.desenhar(tela)
-
         if self.mensagem:
             _desenhar_mensagem(tela, self.mensagem, self.mensagem_cor, self.y_mensagem)
-
         self.botao_principal.desenhar(tela)
         self.botao_voltar.desenhar(tela)
 
-
 class TelaLogin(_TelaFormulario):
     TITULO = "Entrar"
-
     def __init__(self):
         super().__init__()
         x = (LARGURA_TELA - LARGURA_CAMPO) // 2
         y0 = int(ALTURA_TELA * 0.30)
-
         self.campo_usuario = CampoTexto("Nome de usuário", x, y0,
                                         max_len=16, permitido=_permitido_usuario)
         self.campo_senha = CampoTexto("Senha", x, y0 + PASSO_CAMPO, senha=True)
         self.campos = [self.campo_usuario, self.campo_senha]
-
         self._criar_rodape("Entrar")
         self.jogador_logado = None
-
     def enviar(self):
         usuario = self.campo_usuario.texto.strip()
         senha = self.campo_senha.texto
-
         if not usuario or not senha:
             return self._erro("Preencha o usuário e a senha.")
-
         jogador = db.autenticar(usuario, senha)
         if jogador is None:
             return self._erro("Usuário ou senha incorretos.", self.campo_usuario)
-
         self.jogador_logado = jogador
         return "logado"
 
-
 class TelaCadastro(_TelaFormulario):
     TITULO = "Cadastro"
-
     def __init__(self):
         super().__init__()
-
         # cada campo agora reserva uma linha extra para as regras ao vivo
         passo = PASSO_CAMPO + ALTURA_REGRAS
-        espaco_formulario = ALTURA_CAMPO + 3 * passo + ALTURA_REGRAS     # do 1º campo ao fim das regras do último
+        espaco_formulario = ALTURA_CAMPO + 4 * passo + ALTURA_REGRAS     # do 1º campo ao fim das regras do último
         altura_rodape = 14 + 95 + 28                                     # mensagem + botões
         margem_inferior = 10
-
         # sobe o formulário se a tela for baixa, para tudo caber
         y0 = min(int(ALTURA_TELA * 0.19), ALTURA_TELA - margem_inferior - espaco_formulario - altura_rodape)
         y0 = max(y0, 90)
         self.y_titulo = min(int(ALTURA_TELA * 0.08), y0 - 62)
         x = (LARGURA_TELA - LARGURA_CAMPO) // 2
-
         self.campo_usuario = CampoTexto("Nome de usuário", x, y0,
                                         max_len=16, permitido=_permitido_usuario,
                                         regras=_regras_usuario_ao_vivo)
@@ -485,12 +423,18 @@ class TelaCadastro(_TelaFormulario):
                                         regras=_regras_email_ao_vivo)
         self.campo_senha = CampoTexto("Senha", x, y0 + 2 * passo, senha=True,
                                         regras=validacao.regras_senha)
-        self.campo_nascimento = CampoTexto("Data de nascimento", x, y0 + 3 * passo,
+        self.campo_repetir_senha = CampoTexto(
+            "Repetir Senha", x, y0 + 3 * passo, senha=True,
+            regras=lambda texto: validacao.regras_repetir_senha(
+                self.campo_senha.texto, texto
+            ),
+        )
+        self.campo_nascimento = CampoTexto("Data de nascimento", x, y0 + 4 * passo,
                                             mascara_data=True, placeholder="DD/MM/AAAA",
                                             regras=validacao.regras_data_nascimento)
         self.campos = [self.campo_usuario, self.campo_email,
-                        self.campo_senha, self.campo_nascimento]
-
+                        self.campo_senha, self.campo_repetir_senha,
+                        self.campo_nascimento]
         self._criar_rodape("Cadastrar", altura_extra=ALTURA_REGRAS)
         self.usuario_criado = ""
 
@@ -498,36 +442,33 @@ class TelaCadastro(_TelaFormulario):
         # ao tentar enviar, mostra as regras de todos os campos (inclusive os vazios)
         for campo in self.campos:
             campo.regras_forcadas = True
-
         usuario = self.campo_usuario.texto.strip()
         email = self.campo_email.texto.strip()
         senha = self.campo_senha.texto
+        repetir_senha = self.campo_repetir_senha.texto
         nascimento = self.campo_nascimento.texto
-
         erro = validacao.validar_usuario(usuario)
         if erro:
             return self._erro(erro, self.campo_usuario)
         if db.usuario_existe(usuario):
             return self._erro("Nome de usuário já existe. Escolha outro.", self.campo_usuario)
-
         erro = validacao.validar_email(email)
         if erro:
             return self._erro(erro, self.campo_email)
         if db.email_existe(email):
             return self._erro("E-mail já cadastrado. Tente entrar com a sua conta.", self.campo_email)
-
         erro = validacao.validar_senha(senha)
         if erro:
             return self._erro(erro, self.campo_senha)
-
+        erro = validacao.validar_repetir_senha(senha, repetir_senha)
+        if erro:
+            return self._erro(erro, self.campo_repetir_senha)
         erro, nascimento_iso = validacao.validar_data_nascimento(nascimento)
         if erro:
             return self._erro(erro, self.campo_nascimento)
-
         try:
             db.inserir_jogador(usuario, email, senha, nascimento_iso)
         except sqlite3.IntegrityError:
             return self._erro("Usuário ou e-mail já cadastrado. Tente outros dados.", self.campo_usuario)
-
         self.usuario_criado = usuario
         return "cadastrado"
