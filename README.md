@@ -74,6 +74,6 @@ python main.py
 
 ## 👥 Integrantes
 
-| Arthur Teixeira - Desenvolvimento | Organização do Projeto | Design
-| Esthefany Vitória - Design | Desenvolvimento | Organização do Projeto
-| Grazielly Barros- Organização do Projeto | Design | Desenvolvimento
+Arthur Teixeira - Desenvolvimento | Organização do Projeto | Design
+Esthefany Vitória - Design | Desenvolvimento | Organização do Projeto
+Richardson - Organização do Projeto | Design | Desenvolvimento
