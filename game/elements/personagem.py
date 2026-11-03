@@ -1,6 +1,7 @@
 import pygame
 from game.elements.obstaculo import GerenciadorObstaculos
 from game.elements.moeda import Moeda, GerenciadorMoeda
+from game.elements.powerup import PowerUp
 
 
 class Personagem:
@@ -39,12 +40,22 @@ class Personagem:
 
         self.invulnerabilidade = 0
 
+        # --- power-up fantasma: frames restantes de intangibilidade ---
+        self.tempo_intangivel = 0
+
         # --- animação (corrida) ---
         self.imagens = []
         for caminho in caminhos_imagens:
             imagem = pygame.image.load(caminho).convert_alpha()
             imagem = pygame.transform.scale(imagem, (largura, altura))
             self.imagens.append(imagem)
+
+        # versão translúcida de cada frame (usada no modo fantasma)
+        self.imagens_fantasma = []
+        for imagem in self.imagens:
+            fantasma = imagem.copy()
+            fantasma.set_alpha(110)
+            self.imagens_fantasma.append(fantasma)
 
         self.frame_atual = 0
         self.contador_frames = 0
@@ -64,6 +75,7 @@ class Personagem:
         self.contador_frames = 0
         self.vidas = self.vidas_max
         self.invulnerabilidade = 0
+        self.tempo_intangivel = 0
 
     def pular(self):
         if self.no_chao:
@@ -124,6 +136,25 @@ class Personagem:
             if hitbox.colliderect(chao.rect):
                 self.vivo = False
 
+    @property
+    def intangivel(self):
+        return self.tempo_intangivel > 0
+
+    def ativar_intangibilidade(self, frames=PowerUp.DURACAO_FRAMES):
+        """Liga o modo fantasma. Pegar outro power-up reinicia a contagem."""
+        if not self.vivo:
+            return
+        self.tempo_intangivel = frames
+
+    def atualizar_intangibilidade(self):
+        if self.tempo_intangivel > 0:
+            self.tempo_intangivel -= 1
+
+            # se o efeito acabar com um obstáculo em cima do personagem,
+            # dá meio segundo de proteção para ele sair sem tomar dano
+            if self.tempo_intangivel == 0:
+                self.invulnerabilidade = max(self.invulnerabilidade, 30)
+
     def perder_vida(self):
         if self.invulnerabilidade > 0 or not self.vivo:
             return
@@ -148,6 +179,10 @@ class Personagem:
             self.vivo = False
 
     def verificar_colisao_obstaculo(self, gerenciador_obstaculos):
+        # fantasma: atravessa os obstáculos (eles não somem nem machucam)
+        if self.intangivel:
+            return
+
         hitbox = self.rect.inflate(-20, -10)
 
         for obstaculo in gerenciador_obstaculos.lista_obstaculos:
@@ -165,6 +200,15 @@ class Personagem:
                 gerenciador_moeda.remover(moeda)
                 break
 
+    def verificar_colisao_powerup(self, gerenciador_powerup):
+        hitbox = self.rect.inflate(-20, -10)
+
+        for powerup in gerenciador_powerup.lista_powerups:
+            if hitbox.colliderect(powerup.rect):
+                self.ativar_intangibilidade()
+                gerenciador_powerup.remover(powerup)
+                break
+
     def animar(self):
         self.contador_frames += 1
 
@@ -172,16 +216,28 @@ class Personagem:
             self.frame_atual = (self.frame_atual + 1) % len(self.imagens)
             self.contador_frames = 0
 
-    def atualizar(self, lista_de_chaos, gerenciador_obstaculos, gerenciador_moeda):
+    def atualizar(self, lista_de_chaos, gerenciador_obstaculos, gerenciador_moeda, gerenciador_powerup=None):
         self.aplicar_gravidade()
         self.verificar_colisao_com_chao(lista_de_chaos)
         self.verificar_colisao_obstaculo(gerenciador_obstaculos)
         self.verificar_colisao_moeda(gerenciador_moeda)
+        if gerenciador_powerup is not None:
+            self.verificar_colisao_powerup(gerenciador_powerup)
         self.animar()
         self.verificar_queda_fatal()
 
         if self.invulnerabilidade > 0:
             self.invulnerabilidade -= 1
 
+        self.atualizar_intangibilidade()
+
     def desenhar(self, tela):
-        tela.blit(self.imagens[self.frame_atual], self.rect)
+        imagem = self.imagens[self.frame_atual]
+
+        if self.intangivel:
+            # no último segundo alterna entre fantasma e sólido, avisando que vai acabar
+            avisando = self.tempo_intangivel < PowerUp.AVISO_FRAMES
+            if not (avisando and (self.tempo_intangivel // 5) % 2 == 0):
+                imagem = self.imagens_fantasma[self.frame_atual]
+
+        tela.blit(imagem, self.rect)

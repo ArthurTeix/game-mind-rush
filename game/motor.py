@@ -8,6 +8,7 @@ from game.elements.personagem import Personagem
 from game.elements.chao import GerenciadorChao
 from game.elements.obstaculo import GerenciadorObstaculos
 from game.elements.moeda import Moeda, GerenciadorMoeda
+from game.elements.powerup import GerenciadorPowerUp
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
@@ -86,6 +87,8 @@ class Motor:
         self.gerenciador_obstaculos.ignorar(self.gerenciador_chao.lista_chaos[0])
         self.gerenciador_moeda = GerenciadorMoeda()
         self.gerenciador_moeda.ignorar(self.gerenciador_chao.lista_chaos[0])
+        self.gerenciador_powerup = GerenciadorPowerUp()
+        self.gerenciador_powerup.ignorar(self.gerenciador_chao.lista_chaos[0])
 
         y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - ALTURA_PERSONAGEM
         self.personagem.resetar(X_PERSONAGEM, y_inicial)
@@ -101,7 +104,7 @@ class Motor:
 
             elif self.estado == "jogar":
                 self.atualizar_jogo()
-                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos, self.gerenciador_obstaculos, self.gerenciador_moeda)
+                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
 
             elif self.estado == "gameover":
                 desenhar_gameover(self.tela, imagem_gameover, mensagem_gameover)
@@ -226,9 +229,15 @@ class Motor:
         chaos_removidos = self.gerenciador_chao.atualizar()
         self.gerenciador_obstaculos.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade)
         self.gerenciador_moeda.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade)
+
+        # o power-up não pode nascer em cima de moedas ou obstáculos
+        ocupados = [o.rect for o in self.gerenciador_obstaculos.lista_obstaculos]
+        ocupados += [m.rect for m in self.gerenciador_moeda.lista_moeda]
+        self.gerenciador_powerup.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade, ocupados)
+
         self.pontos += chaos_removidos
 
-        self.personagem.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_obstaculos, self.gerenciador_moeda)
+        self.personagem.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
         if not self.personagem.vivo:
             self.estado = "gameover"
 
