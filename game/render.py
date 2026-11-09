@@ -108,3 +108,6 @@ def desenhar_modos(tela):
 
     botao_modo1.desenhar(tela)
     botao_modo2.desenhar(tela)
+
+def desenhar_rogue(tela):
+    tela.fill((255, 0, 0))
