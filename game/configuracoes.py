@@ -34,7 +34,7 @@ imagem_bg_rank = pygame.image.load(CAMINHO_BG_RANK)
 imagem_bg_rank = pygame.transform.scale(imagem_bg_rank, (LARGURA_TELA, ALTURA_TELA))
 
 # caminho da imagem do botão de sair do ranking
-CAMINHO_SAIR_RANKING = './img/botoes/sair_ranking.png'
+CAMINHO_SAIR_RANKING = './img/botoes/botoes_menu/sair_ranking.png'
 imagem_sair_ranking = pygame.image.load(CAMINHO_SAIR_RANKING)
 imagem_sair_ranking = pygame.transform.scale(imagem_sair_ranking, (200, 200))
 rect_sair_ranking = imagem_sair_ranking.get_rect(topleft=(110, 20))

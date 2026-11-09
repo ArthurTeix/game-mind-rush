@@ -38,16 +38,30 @@ def centralizar_em_linha(lista_botoes, y, espaco=40):
         botao.rect.centery = y
         x_atual += botao.rect.width + espaco
 
+def centralizar_em_coluna(lista_botoes, x, espaco=40):
+    altura_total = sum(botao.rect.height for botao in lista_botoes)
+    altura_total += espaco * (len(lista_botoes) - 1)
+
+    y_atual = (ALTURA_TELA - altura_total) // 2
+
+    for botao in lista_botoes:
+        botao.rect.centerx = x
+        botao.rect.centery = y_atual + botao.rect.height // 2
+        y_atual += botao.rect.height + espaco
+
 
 # criação de botões
-botao_jogar = Botao("./img/botoes/JOGARMR.png", imagem_hover="./img/botoes/JOGARMR_HOVER.png")
-botao_modos = Botao("./img/botoes/MODOSMR.png", imagem_hover="./img/botoes/MODOSMR_HOVER.png")
-botao_config = Botao("./img/botoes/CONFIGMR.png", imagem_hover="./img/botoes/CONFIGMR_HOVER.png")
-botao_ranking = Botao("./img/botoes/RANKINGMR.png", imagem_hover="./img/botoes/RANKINGMR_HOVER.png")
-botao_sair = Botao("./img/botoes/SAIRMR.png", imagem_hover="./img/botoes/SAIRMR_HOVER.png")
-botao_reiniciar = Botao("./img/botoes/REINICIARMR.png", imagem_hover="./img/botoes/REINICIARMR_HOVER.png")
-botao_sair_gameover = Botao("./img/botoes/SAIRGOMR.png", imagem_hover="./img/botoes/SAIRGOMR_HOVER.png")
-botao_menu = Botao("./img/botoes/MENUMR.png", imagem_hover="./img/botoes/MENUMR_HOVER.png")
+botao_jogar = Botao("./img/botoes/botoes_menu/JOGARMR.png", imagem_hover="./img/botoes/botoes_menu/JOGARMR_HOVER.png")
+botao_modos = Botao("./img/botoes/botoes_menu/MODOSMR.png", imagem_hover="./img/botoes/botoes_menu/MODOSMR_HOVER.png")
+botao_config = Botao("./img/botoes/botoes_menu/CONFIGMR.png", imagem_hover="./img/botoes/botoes_menu/CONFIGMR_HOVER.png")
+botao_ranking = Botao("./img/botoes/botoes_menu/RANKINGMR.png", imagem_hover="./img/botoes/botoes_menu/RANKINGMR_HOVER.png")
+botao_sair = Botao("./img/botoes/botoes_menu/SAIRMR.png", imagem_hover="./img/botoes/botoes_menu/SAIRMR_HOVER.png")
+botao_reiniciar = Botao("./img/botoes/botoes_menu/REINICIARMR.png", imagem_hover="./img/botoes/botoes_menu/REINICIARMR_HOVER.png")
+botao_sair_gameover = Botao("./img/botoes/botoes_menu/SAIRGOMR.png", imagem_hover="./img/botoes/botoes_menu/SAIRGOMR_HOVER.png")
+botao_menu = Botao("./img/botoes/botoes_menu/MENUMR.png", imagem_hover="./img/botoes/botoes_menu/MENUMR_HOVER.png")
+
+botao_modo1 = Botao("./img/botoes/botoes_modos/modo1.png", imagem_hover="./img/botoes/botoes_modos/modo1_hover.png")
+botao_modo2 = Botao("./img/botoes/botoes_modos/modo2.png", imagem_hover="./img/botoes/botoes_modos/modo2_hover.png")
 
 # posiciona os botões do menu centralizado
 Y_BOTOES_MENU = int(ALTURA_TELA * 0.85)
@@ -61,4 +75,11 @@ Y_BOTOES_GAMEOVER = int(ALTURA_TELA * 0.85)
 centralizar_em_linha(
     [botao_reiniciar, botao_menu, botao_sair_gameover],
     y=Y_BOTOES_GAMEOVER
+)
+
+# posiciona os botões da tela modos centralizado verticalmente
+X_BOTOES_MODOS = int(LARGURA_TELA // 2)
+centralizar_em_coluna(
+    [botao_modo1, botao_modo2],
+    x=X_BOTOES_MODOS
 )
