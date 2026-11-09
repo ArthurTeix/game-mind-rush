@@ -8,7 +8,7 @@ from game.util.cores import cores
 from game.elements.powerup import PowerUp
 from game.ui.logo import logo_menu
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, FONTE_MENSAGEM, FONTE_VIDAS, FONTE_RELOGIO, FPS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, mensagem_gameover, imagem_gameover, imagem_estrela, imagem_coracao
-from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
+from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1, botao_modo2
 
 def desenhar_menu(tela, jogador=None):
     tela.blit(imagem_menu, (0, 0))
@@ -102,3 +102,9 @@ def desenhar_ranking(tela, top5):
         tela.blit(ranking, rect_rank_text)
 
     tela.blit(imagem_sair_ranking, rect_sair_ranking)
+
+def desenhar_modos(tela):
+    tela.fill((0, 255, 0))
+
+    botao_modo1.desenhar(tela)
+    botao_modo2.desenhar(tela)

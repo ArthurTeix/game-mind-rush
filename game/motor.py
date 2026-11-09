@@ -9,7 +9,7 @@ from game.elements.chao import GerenciadorChao
 from game.elements.obstaculo import GerenciadorObstaculos
 from game.elements.moeda import Moeda, GerenciadorMoeda
 from game.elements.powerup import GerenciadorPowerUp
-from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, rect_sair_ranking
+from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, desenhar_modos, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
 from game.render import imagem_menu, imagem_gameover, mensagem_gameover
@@ -121,6 +121,9 @@ class Motor:
             elif self.estado == "cadastro":
                 self.tela_cadastro.desenhar(self.tela)
 
+            elif self.estado == "modos":
+                desenhar_modos(self.tela)
+
             # único update de tela por frame
             pygame.display.update()
 
@@ -208,6 +211,9 @@ class Motor:
 
                     elif botao_config.clicado(evento.pos):
                         self.estado = "config"
+
+                    elif botao_modos.clicado(evento.pos):
+                        self.estado = "modos"
 
                     elif botao_sair.clicado(evento.pos):
                         self.rodando = False
