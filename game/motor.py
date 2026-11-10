@@ -10,7 +10,7 @@ from game.elements.obstaculo import GerenciadorObstaculos
 from game.elements.moeda import Moeda, GerenciadorMoeda
 from game.elements.powerup import GerenciadorPowerUp
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, desenhar_modos, desenhar_rogue, rect_sair_ranking
-from game.ui.botao import botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1
+from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1, botao_modo2
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
 from game.render import imagem_menu, imagem_gameover, mensagem_gameover
 
@@ -22,7 +22,7 @@ ALTURA_PERSONAGEM = 80
 LARGURA_PERSONAGEM = 70
 X_PERSONAGEM = 150
 
-ESTADOS_CONTA = ("config", "login", "cadastro")
+ESTADOS_CONTA = ("conta", "login", "cadastro")
 
 
 class Motor:
@@ -103,16 +103,15 @@ class Motor:
                 desenhar_menu(self.tela, self.jogador)
 
             elif self.estado == "jogar":
-                self.atualizar_jogo()
-                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
+                desenhar_modos(self.tela)
 
-            elif self.estado == "gameover":
+            elif self.estado == "gameover_endless":
                 desenhar_gameover(self.tela, imagem_gameover, mensagem_gameover)
 
             elif self.estado == "rank":
                 desenhar_ranking(self.tela, self.top5)
 
-            elif self.estado == "config":
+            elif self.estado == "conta":
                 self.tela_config.desenhar(self.tela, self.jogador)
 
             elif self.estado == "login":
@@ -121,11 +120,12 @@ class Motor:
             elif self.estado == "cadastro":
                 self.tela_cadastro.desenhar(self.tela)
 
-            elif self.estado == "modos":
-                desenhar_modos(self.tela)
-
             elif self.estado == "rogue":
                 desenhar_rogue(self.tela)
+
+            elif self.estado == "endlessrun":
+                self.atualizar_jogo()
+                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
 
             # único update de tela por frame
             pygame.display.update()
@@ -143,11 +143,11 @@ class Motor:
 
     def tratar_evento_conta(self, evento):
         """Eventos das telas de configuração, login e cadastro."""
-        if self.estado == "config":
+        if self.estado == "conta":
             acao = self.tela_config.tratar_evento(evento, self.jogador)
 
             if acao == "login":
-                self.abrir_login(origem="config")
+                self.abrir_login(origem="conta")
             elif acao == "cadastro":
                 self.abrir_cadastro()
             elif acao == "logout":
@@ -168,12 +168,12 @@ class Motor:
             acao = self.tela_cadastro.tratar_evento(evento)
 
             if acao == "cadastrado":
-                self.abrir_login("Conta criada com sucesso!", origem="config", sucesso=True)
+                self.abrir_login("Conta criada com sucesso!", origem="conta", sucesso=True)
                 # já preenche o usuário e deixa o cursor na senha
                 self.tela_login.campo_usuario.texto = self.tela_cadastro.usuario_criado
                 self.tela_login.focar_campo(self.tela_login.campo_senha)
             elif acao == "voltar":
-                self.estado = "config"
+                self.estado = "conta"
 
     def capturar_eventos(self):
         for evento in pygame.event.get():
@@ -189,19 +189,18 @@ class Motor:
                 self.encerrar_jogo()
 
             if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
-                if self.estado == "jogar":
+                if self.estado == "endlessrun":
                     self.personagem.pular()
 
             if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_s, pygame.K_DOWN):
-                if self.estado == "jogar":
+                if self.estado == "endlessrun":
                     self.personagem.descer()
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if self.estado == "menu":
                     if botao_jogar.clicado(evento.pos):
                         # qualquer pessoa pode jogar, logada ou não
-                        self.iniciar_partida()
-                        self.estado = "jogar"
+                       self.estado = "jogar"
 
                     elif botao_ranking.clicado(evento.pos):
                         # o ranking é individual, então precisa de login
@@ -212,11 +211,11 @@ class Motor:
                             self.top5 = get_top5_pontuacao(self.jogador["id"])
                             self.estado = "rank"
 
-                    elif botao_config.clicado(evento.pos):
-                        self.estado = "config"
+                    elif botao_conta.clicado(evento.pos):
+                        self.estado = "conta"
 
-                    elif botao_modos.clicado(evento.pos):
-                        self.estado = "modos"
+                    elif botao_jogar.clicado(evento.pos):
+                        self.estado = "jogar"
 
                     elif botao_sair.clicado(evento.pos):
                         self.rodando = False
@@ -225,14 +224,17 @@ class Motor:
                     if rect_sair_ranking.collidepoint(evento.pos):
                         self.estado = "menu"
 
-                elif self.estado == "modos":
+                elif self.estado == "jogar":
                     if botao_modo1.clicado(evento.pos):
+                        self.iniciar_partida()
+                        self.estado = "endlessrun"
+                    elif botao_modo2.clicado(evento.pos):
                         self.estado = "rogue"
 
-                elif self.estado == "gameover":
+                elif self.estado == "gameover_endless":
                     if botao_reiniciar.clicado(evento.pos):
                         self.iniciar_partida()
-                        self.estado = "jogar"
+                        self.estado = "endlessrun"
                     elif botao_menu.clicado(evento.pos):
                         self.estado = "menu"
                     elif botao_sair_gameover.clicado(evento.pos):
@@ -252,7 +254,7 @@ class Motor:
 
         self.personagem.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
         if not self.personagem.vivo:
-            self.estado = "gameover"
+            self.estado = "gameover_endless"
 
         # A pontuação só é salva com login
             if self.logado:
