@@ -30,7 +30,7 @@ class Obstaculo:
 
     @classmethod
     def carregar_imagem(cls):
-        imagem_obstaculo = pygame.image.load('./img/elementos/obstaculo.png').convert()
+        imagem_obstaculo = pygame.image.load('./assets/img/elementos/obstaculo.png').convert()
         imagem_obstaculo.set_colorkey(imagem_obstaculo.get_at((0, 0)))
         imagem_obstaculo = imagem_obstaculo.convert_alpha()
         imagem_obstaculo = imagem_obstaculo.subsurface(imagem_obstaculo.get_bounding_rect()).copy()

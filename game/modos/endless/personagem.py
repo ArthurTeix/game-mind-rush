@@ -1,7 +1,7 @@
 import pygame
-from game.elements.obstaculo import GerenciadorObstaculos
-from game.elements.moeda import Moeda, GerenciadorMoeda
-from game.elements.powerup import PowerUp
+from game.modos.endless.obstaculo import GerenciadorObstaculos
+from game.modos.endless.moeda import Moeda, GerenciadorMoeda
+from game.modos.endless.powerup import PowerUp
 
 
 class Personagem:

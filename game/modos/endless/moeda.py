@@ -27,7 +27,7 @@ class Moeda:
 
     @classmethod
     def carregar_imagem(cls):
-        imagem = pygame.image.load('./img/elementos/moeda.png').convert_alpha()
+        imagem = pygame.image.load('./assets/img/elementos/moeda.png').convert_alpha()
         cls._imagem_moeda = pygame.transform.scale(imagem, (cls.LARGURA, cls.ALTURA))
 
     def mover(self, velocidade):

@@ -1,7 +1,7 @@
 import pygame
 from random import randint
 from game.util.cores import cores
-from game.elements.obstaculo import Obstaculo
+from game.modos.endless.obstaculo import Obstaculo
 
 class Chao:
 

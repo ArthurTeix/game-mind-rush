@@ -12,6 +12,6 @@ class Logo:
 
 
 logo_menu = Logo(
-    "./img/logo/LOGOMR.png",
+    "./assets/img/logo/LOGOMR.png",
     centro=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.15))
 )

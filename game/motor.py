@@ -4,11 +4,11 @@ import pygame
 
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREEN, FPS
 from game.database.db import criar_tabelas, salvar_pontuacao, get_top5_pontuacao
-from game.elements.personagem import Personagem
-from game.elements.chao import GerenciadorChao
-from game.elements.obstaculo import GerenciadorObstaculos
-from game.elements.moeda import Moeda, GerenciadorMoeda
-from game.elements.powerup import GerenciadorPowerUp
+from game.modos.endless.personagem import Personagem
+from game.modos.endless.chao import GerenciadorChao
+from game.modos.endless.obstaculo import GerenciadorObstaculos
+from game.modos.endless.moeda import Moeda, GerenciadorMoeda
+from game.modos.endless.powerup import GerenciadorPowerUp
 from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, desenhar_modos, desenhar_rogue, rect_sair_ranking
 from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1, botao_modo2
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
@@ -56,9 +56,9 @@ class Motor:
             x=X_PERSONAGEM, y=0,
             largura=LARGURA_PERSONAGEM, altura=ALTURA_PERSONAGEM,
             caminhos_imagens=[
-                "./img/personagens/computacao/robo_pos0.png",
-                "./img/personagens/computacao/robo_pos1.png",
-                "./img/personagens/computacao/robo_pos2.png",
+                "./assets/img/personagens/computacao/robo_pos0.png",
+                "./assets/img/personagens/computacao/robo_pos1.png",
+                "./assets/img/personagens/computacao/robo_pos2.png",
             ]
         )
 

@@ -5,7 +5,7 @@ import math
 import pygame
 
 from game.util.cores import cores
-from game.elements.powerup import PowerUp
+from game.modos.endless.powerup import PowerUp
 from game.ui.logo import logo_menu
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, FONTE_MENSAGEM, FONTE_VIDAS, FONTE_RELOGIO, FPS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, mensagem_gameover, imagem_gameover, imagem_estrela, imagem_coracao
 from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1, botao_modo2

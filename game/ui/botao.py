@@ -51,17 +51,17 @@ def centralizar_em_coluna(lista_botoes, x, espaco=40):
 
 
 # criação de botões
-botao_jogar = Botao("./img/botoes/botoes_menu/JOGARMR.png", imagem_hover="./img/botoes/botoes_menu/JOGARMR_HOVER.png")
-botao_modos = Botao("./img/botoes/botoes_menu/MODOSMR.png", imagem_hover="./img/botoes/botoes_menu/MODOSMR_HOVER.png")
-botao_conta = Botao("./img/botoes/botoes_menu/CONFIGMR.png", imagem_hover="./img/botoes/botoes_menu/CONFIGMR_HOVER.png")
-botao_ranking = Botao("./img/botoes/botoes_menu/RANKINGMR.png", imagem_hover="./img/botoes/botoes_menu/RANKINGMR_HOVER.png")
-botao_sair = Botao("./img/botoes/botoes_menu/SAIRMR.png", imagem_hover="./img/botoes/botoes_menu/SAIRMR_HOVER.png")
-botao_reiniciar = Botao("./img/botoes/botoes_menu/REINICIARMR.png", imagem_hover="./img/botoes/botoes_menu/REINICIARMR_HOVER.png")
-botao_sair_gameover = Botao("./img/botoes/botoes_menu/SAIRGOMR.png", imagem_hover="./img/botoes/botoes_menu/SAIRGOMR_HOVER.png")
-botao_menu = Botao("./img/botoes/botoes_menu/MENUMR.png", imagem_hover="./img/botoes/botoes_menu/MENUMR_HOVER.png")
+botao_jogar = Botao("./assets/img/botoes/botoes_menu/JOGARMR.png", imagem_hover="./assets/img/botoes/botoes_menu/JOGARMR_HOVER.png")
+botao_modos = Botao("./assets/img/botoes/botoes_menu/MODOSMR.png", imagem_hover="./assets/img/botoes/botoes_menu/MODOSMR_HOVER.png")
+botao_conta = Botao("./assets/img/botoes/botoes_menu/CONFIGMR.png", imagem_hover="./assets/img/botoes/botoes_menu/CONFIGMR_HOVER.png")
+botao_ranking = Botao("./assets/img/botoes/botoes_menu/RANKINGMR.png", imagem_hover="./assets/img/botoes/botoes_menu/RANKINGMR_HOVER.png")
+botao_sair = Botao("./assets/img/botoes/botoes_menu/SAIRMR.png", imagem_hover="./assets/img/botoes/botoes_menu/SAIRMR_HOVER.png")
+botao_reiniciar = Botao("./assets/img/botoes/botoes_menu/REINICIARMR.png", imagem_hover="./assets/img/botoes/botoes_menu/REINICIARMR_HOVER.png")
+botao_sair_gameover = Botao("./assets/img/botoes/botoes_menu/SAIRGOMR.png", imagem_hover="./assets/img/botoes/botoes_menu/SAIRGOMR_HOVER.png")
+botao_menu = Botao("./assets/img/botoes/botoes_menu/MENUMR.png", imagem_hover="./assets/img/botoes/botoes_menu/MENUMR_HOVER.png")
 
-botao_modo1 = Botao("./img/botoes/botoes_modos/modo1.png", imagem_hover="./img/botoes/botoes_modos/modo1_hover.png")
-botao_modo2 = Botao("./img/botoes/botoes_modos/modo2.png", imagem_hover="./img/botoes/botoes_modos/modo2_hover.png")
+botao_modo1 = Botao("./assets/img/botoes/botoes_modos/modo1.png", imagem_hover="./assets/img/botoes/botoes_modos/modo1_hover.png")
+botao_modo2 = Botao("./assets/img/botoes/botoes_modos/modo2.png", imagem_hover="./assets/img/botoes/botoes_modos/modo2_hover.png")
 
 # posiciona os botões do menu centralizado
 Y_BOTOES_MENU = int(ALTURA_TELA * 0.85)
