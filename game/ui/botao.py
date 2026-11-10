@@ -53,7 +53,7 @@ def centralizar_em_coluna(lista_botoes, x, espaco=40):
 # criação de botões
 botao_jogar = Botao("./img/botoes/botoes_menu/JOGARMR.png", imagem_hover="./img/botoes/botoes_menu/JOGARMR_HOVER.png")
 botao_modos = Botao("./img/botoes/botoes_menu/MODOSMR.png", imagem_hover="./img/botoes/botoes_menu/MODOSMR_HOVER.png")
-botao_config = Botao("./img/botoes/botoes_menu/CONFIGMR.png", imagem_hover="./img/botoes/botoes_menu/CONFIGMR_HOVER.png")
+botao_conta = Botao("./img/botoes/botoes_menu/CONFIGMR.png", imagem_hover="./img/botoes/botoes_menu/CONFIGMR_HOVER.png")
 botao_ranking = Botao("./img/botoes/botoes_menu/RANKINGMR.png", imagem_hover="./img/botoes/botoes_menu/RANKINGMR_HOVER.png")
 botao_sair = Botao("./img/botoes/botoes_menu/SAIRMR.png", imagem_hover="./img/botoes/botoes_menu/SAIRMR_HOVER.png")
 botao_reiniciar = Botao("./img/botoes/botoes_menu/REINICIARMR.png", imagem_hover="./img/botoes/botoes_menu/REINICIARMR_HOVER.png")
@@ -66,7 +66,7 @@ botao_modo2 = Botao("./img/botoes/botoes_modos/modo2.png", imagem_hover="./img/b
 # posiciona os botões do menu centralizado
 Y_BOTOES_MENU = int(ALTURA_TELA * 0.85)
 centralizar_em_linha(
-    [botao_jogar, botao_modos, botao_config, botao_ranking, botao_sair],
+    [botao_jogar, botao_conta, botao_ranking, botao_sair],
     y=Y_BOTOES_MENU
 )
 
