@@ -3,30 +3,19 @@
 import pygame
 
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREEN, FPS
-from game.database.db import criar_tabelas, salvar_pontuacao, get_top5_pontuacao
-from game.modos.endless.personagem import Personagem
-from game.modos.endless.chao import GerenciadorChao
-from game.modos.endless.obstaculo import GerenciadorObstaculos
-from game.modos.endless.moeda import Moeda, GerenciadorMoeda
-from game.modos.endless.powerup import GerenciadorPowerUp
-from game.render import desenhar_menu, desenhar_jogo, desenhar_gameover, desenhar_ranking, desenhar_modos, desenhar_rogue, rect_sair_ranking
-from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1, botao_modo2
+from game.database.db import criar_tabelas, get_top5_pontuacao
+from game.render import desenhar_menu, desenhar_gameover_endless, desenhar_ranking, desenhar_modos, desenhar_rogue, rect_sair_rank
+from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar_endless, botao_sair_gameover_endless, botao_menu_endless, botao_modo1, botao_modo2
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
-from game.render import imagem_menu, imagem_gameover, mensagem_gameover
-
-# --- valores da partida (ficam num lugar só: início e reinício usam os mesmos) ---
-VELOCIDADE_CHAO = 8.5
-ESPACO_MINIMO = 150
-ESPACO_MAXIMO = 270
-ALTURA_PERSONAGEM = 80
-LARGURA_PERSONAGEM = 70
-X_PERSONAGEM = 150
+from game.render import img_gameover_endless, msg_gameover_endless
+from game.modos.endless.runner import EndlessRunner
 
 ESTADOS_CONTA = ("conta", "login", "cadastro")
 
-
 class Motor:
     def __init__(self):
+        pygame.init()
+        
         flags = pygame.FULLSCREEN if FULLSCREEN else 0
         self.tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), flags)
         pygame.display.set_caption(TITULO_JOGO)
@@ -41,6 +30,7 @@ class Motor:
 
         # jogador logado: None ou {"id": ..., "usuario": ...}
         self.jogador = None
+        self.endless = EndlessRunner()
         self.origem_login = "menu"   # para onde o botão "Voltar" do login leva
 
         # telas de conta
@@ -48,50 +38,11 @@ class Motor:
         self.tela_login = TelaLogin()
         self.tela_cadastro = TelaCadastro()
 
-        # o personagem é criado uma única vez (carrega as imagens);
-        # a posição real é definida em iniciar_partida()
-        self.personagem = Personagem(
-            largura_tela=LARGURA_TELA,
-            altura_tela=ALTURA_TELA,
-            x=X_PERSONAGEM, y=0,
-            largura=LARGURA_PERSONAGEM, altura=ALTURA_PERSONAGEM,
-            caminhos_imagens=[
-                "./assets/img/personagens/computacao/robo_pos0.png",
-                "./assets/img/personagens/computacao/robo_pos1.png",
-                "./assets/img/personagens/computacao/robo_pos2.png",
-            ]
-        )
-
-        self.iniciar_partida()
-
     @property
     def logado(self):
         """True se há um jogador logado. Use para liberar conteúdo exclusivo (ex.: personagem)."""
         return self.jogador is not None
 
-    def iniciar_partida(self):
-        """Prepara uma partida nova do zero (usada no início, no reinício e ao jogar pelo menu)."""
-        self.pontos = 0
-
-        # o chão é criado primeiro, porque o personagem
-        # precisa nascer em cima de um bloco já existente
-        self.gerenciador_chao = GerenciadorChao(
-            largura_tela=LARGURA_TELA,
-            altura_tela=ALTURA_TELA,
-            velocidade=VELOCIDADE_CHAO,
-            espaco_minimo=ESPACO_MINIMO,
-            espaco_maximo=ESPACO_MAXIMO
-        )
-
-        self.gerenciador_obstaculos = GerenciadorObstaculos()
-        self.gerenciador_obstaculos.ignorar(self.gerenciador_chao.lista_chaos[0])
-        self.gerenciador_moeda = GerenciadorMoeda()
-        self.gerenciador_moeda.ignorar(self.gerenciador_chao.lista_chaos[0])
-        self.gerenciador_powerup = GerenciadorPowerUp()
-        self.gerenciador_powerup.ignorar(self.gerenciador_chao.lista_chaos[0])
-
-        y_inicial = (ALTURA_TELA - self.gerenciador_chao.altura_do_chao_inicial) - ALTURA_PERSONAGEM
-        self.personagem.resetar(X_PERSONAGEM, y_inicial)
 
     def jogo(self):
         while self.rodando:
@@ -106,7 +57,7 @@ class Motor:
                 desenhar_modos(self.tela)
 
             elif self.estado == "gameover_endless":
-                desenhar_gameover(self.tela, imagem_gameover, mensagem_gameover)
+                desenhar_gameover_endless(self.tela, img_gameover_endless, msg_gameover_endless)
 
             elif self.estado == "rank":
                 desenhar_ranking(self.tela, self.top5)
@@ -124,11 +75,15 @@ class Motor:
                 desenhar_rogue(self.tela)
 
             elif self.estado == "endlessrun":
-                self.atualizar_jogo()
-                desenhar_jogo(self.tela, self.personagem, self.gerenciador_chao, self.pontos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
+               
+                vivo = self.endless.atualizar(self.jogador)
 
-            # único update de tela por frame
-            pygame.display.update()
+                if not vivo:
+                    self.estado = "gameover_endless"
+
+                self.endless.desenhar(self.tela)
+
+            pygame.display.flip()
 
     # ------------------------------------------------------------ navegação
 
@@ -188,13 +143,8 @@ class Motor:
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 self.encerrar_jogo()
 
-            if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
-                if self.estado == "endlessrun":
-                    self.personagem.pular()
-
-            if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_s, pygame.K_DOWN):
-                if self.estado == "endlessrun":
-                    self.personagem.descer()
+            if self.estado == "endlessrun":
+                 self.endless.eventos(evento)
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if self.estado == "menu":
@@ -214,51 +164,28 @@ class Motor:
                     elif botao_conta.clicado(evento.pos):
                         self.estado = "conta"
 
-                    elif botao_jogar.clicado(evento.pos):
-                        self.estado = "jogar"
-
                     elif botao_sair.clicado(evento.pos):
                         self.rodando = False
 
                 elif self.estado == "rank":
-                    if rect_sair_ranking.collidepoint(evento.pos):
+                    if rect_sair_rank.collidepoint(evento.pos):
                         self.estado = "menu"
 
                 elif self.estado == "jogar":
                     if botao_modo1.clicado(evento.pos):
-                        self.iniciar_partida()
+                        self.endless.iniciar_partida()
                         self.estado = "endlessrun"
                     elif botao_modo2.clicado(evento.pos):
                         self.estado = "rogue"
 
                 elif self.estado == "gameover_endless":
-                    if botao_reiniciar.clicado(evento.pos):
-                        self.iniciar_partida()
+                    if botao_reiniciar_endless.clicado(evento.pos):
+                        self.endless.iniciar_partida()
                         self.estado = "endlessrun"
-                    elif botao_menu.clicado(evento.pos):
+                    elif botao_menu_endless.clicado(evento.pos):
                         self.estado = "menu"
-                    elif botao_sair_gameover.clicado(evento.pos):
+                    elif botao_sair_gameover_endless.clicado(evento.pos):
                         self.rodando = False
-
-    def atualizar_jogo(self):
-        chaos_removidos = self.gerenciador_chao.atualizar()
-        self.gerenciador_obstaculos.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade)
-        self.gerenciador_moeda.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade)
-
-        # o power-up não pode nascer em cima de moedas ou obstáculos
-        ocupados = [o.rect for o in self.gerenciador_obstaculos.lista_obstaculos]
-        ocupados += [m.rect for m in self.gerenciador_moeda.lista_moeda]
-        self.gerenciador_powerup.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_chao.velocidade, ocupados)
-
-        self.pontos += chaos_removidos
-
-        self.personagem.atualizar(self.gerenciador_chao.lista_chaos, self.gerenciador_obstaculos, self.gerenciador_moeda, self.gerenciador_powerup)
-        if not self.personagem.vivo:
-            self.estado = "gameover_endless"
-
-        # A pontuação só é salva com login
-            if self.logado:
-                salvar_pontuacao(self.jogador["id"], self.pontos )
 
     def encerrar_jogo(self):
         self.rodando = False

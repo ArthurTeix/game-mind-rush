@@ -25,34 +25,34 @@ FPS = 60
 
 # caminho da imagem do menu
 CAMINHO_MENU = './assets/img/fundos/MENU.png'
-imagem_menu = pygame.image.load(CAMINHO_MENU)
-imagem_menu = pygame.transform.scale(imagem_menu, (LARGURA_TELA, ALTURA_TELA))
+img_menu = pygame.image.load(CAMINHO_MENU)
+img_menu = pygame.transform.scale(img_menu, (LARGURA_TELA, ALTURA_TELA))
 
 #  caminho da imagem de fundo do ranking
 CAMINHO_BG_RANK = './assets/img/fundos/bg_ranking.png'
-imagem_bg_rank = pygame.image.load(CAMINHO_BG_RANK)
-imagem_bg_rank = pygame.transform.scale(imagem_bg_rank, (LARGURA_TELA, ALTURA_TELA))
+img_bg_rank = pygame.image.load(CAMINHO_BG_RANK)
+img_bg_rank = pygame.transform.scale(img_bg_rank, (LARGURA_TELA, ALTURA_TELA))
 
 # caminho da imagem do botão de sair do ranking
 CAMINHO_SAIR_RANKING = './assets/img/botoes/botoes_menu/sair_ranking.png'
-imagem_sair_ranking = pygame.image.load(CAMINHO_SAIR_RANKING)
-imagem_sair_ranking = pygame.transform.scale(imagem_sair_ranking, (200, 200))
-rect_sair_ranking = imagem_sair_ranking.get_rect(topleft=(110, 20))
+img_sair_rank = pygame.image.load(CAMINHO_SAIR_RANKING)
+img_sair_rank = pygame.transform.scale(img_sair_rank, (200, 200))
+rect_sair_rank = img_sair_rank.get_rect(topleft=(110, 20))
 
 # caminho da imagem de fundo do jogo
 CAMINHO_BG_JOGO = './assets/img/fundos/bg_jogo.png'
-imagem_bg_jogo = pygame.image.load(CAMINHO_BG_JOGO)
-imagem_bg_jogo = pygame.transform.scale(imagem_bg_jogo, (LARGURA_TELA, ALTURA_TELA))
+img_bg_endless = pygame.image.load(CAMINHO_BG_JOGO)
+img_bg_endless = pygame.transform.scale(img_bg_endless, (LARGURA_TELA, ALTURA_TELA))
 
 CAMINHO_IMAGEM_GAMEOVER = './assets/img/fundos/GAMEOVER.png'
-imagem_gameover = pygame.image.load(CAMINHO_IMAGEM_GAMEOVER)
-imagem_gameover = pygame.transform.scale(imagem_gameover, (LARGURA_TELA, ALTURA_TELA))
+img_gameover_endless = pygame.image.load(CAMINHO_IMAGEM_GAMEOVER)
+img_gameover_endless = pygame.transform.scale(img_gameover_endless, (LARGURA_TELA, ALTURA_TELA))
 
-CAMINHO_MENSAGEM_GAMEOVER = './assets/img/mensagem/MORREUMR.png'
-mensagem_gameover = pygame.image.load(CAMINHO_MENSAGEM_GAMEOVER)
+CAMINHO_MENSAGEM_GAMEOVER = './assets/img/mensagem/msg_gameover_endless.png'
+msg_gameover_endless = pygame.image.load(CAMINHO_MENSAGEM_GAMEOVER)
 
 CAMINHO_ESTRELA = './assets/img/elementos/estrela.png'
-imagem_estrela = pygame.image.load(CAMINHO_ESTRELA)
+img_estrela = pygame.image.load(CAMINHO_ESTRELA)
 
 CAMINHO_CORACAO = './assets/img/elementos/coracao.png'
-imagem_coracao = pygame.image.load(CAMINHO_CORACAO)
+img_coracao = pygame.image.load(CAMINHO_CORACAO)
