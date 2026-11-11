@@ -7,11 +7,11 @@ import pygame
 from game.util.cores import cores
 from game.modos.endless.powerup import PowerUp
 from game.ui.logo import logo_menu
-from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_TITULO, FONTE_PONTOS, FONTE_MENSAGEM, FONTE_VIDAS, FONTE_RELOGIO, FPS, imagem_menu, imagem_bg_rank, imagem_sair_ranking, imagem_bg_jogo, rect_sair_ranking, mensagem_gameover, imagem_gameover, imagem_estrela, imagem_coracao
-from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar, botao_sair_gameover, botao_menu, botao_modo1, botao_modo2
+from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_PONTOS, FONTE_MENSAGEM, FONTE_RELOGIO, FPS, img_menu, img_bg_rank, img_sair_rank, img_bg_endless, rect_sair_rank, msg_gameover_endless, img_gameover_endless, img_estrela, img_coracao
+from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar_endless, botao_sair_gameover_endless, botao_menu_endless, botao_modo1, botao_modo2
 
 def desenhar_menu(tela, jogador=None):
-    tela.blit(imagem_menu, (0, 0))
+    tela.blit(img_menu, (0, 0))
 
     if jogador:
         saudacao = FONTE_MENSAGEM.render(f"Oi, {jogador['usuario']}", True, cores['verde-logo'])
@@ -55,8 +55,8 @@ def desenhar_relogio_intangibilidade(tela, frames_restantes):
     tela.blit(texto, texto.get_rect(center=centro))
 
 
-def desenhar_jogo(tela, personagem, gerenciador_chao, pontos, gerenciador_obstaculos, gerenciador_moeda, gerenciador_powerup=None):
-    tela.blit(imagem_bg_jogo, (0, 0))
+def desenhar_endless(tela, personagem, gerenciador_chao, pontos, gerenciador_obstaculos, gerenciador_moeda, gerenciador_powerup=None):
+    tela.blit(img_bg_endless, (0, 0))
 
     gerenciador_chao.desenhar(tela)
     gerenciador_obstaculos.desenhar(tela)
@@ -65,29 +65,29 @@ def desenhar_jogo(tela, personagem, gerenciador_chao, pontos, gerenciador_obstac
         gerenciador_powerup.desenhar(tela)
     personagem.desenhar(tela)
 
-    tela.blit(imagem_estrela, (20, 20))
+    tela.blit(img_estrela, (20, 20))
     texto_pontos = FONTE_PONTOS.render(f"{pontos}", True, cores['amarelo'])
     tela.blit(texto_pontos, (110, 30))
 
     for i in range(max(personagem.vidas, 0)):
-        tela.blit(imagem_coracao, (20 + i * 40, 100))
+        tela.blit(img_coracao, (20 + i * 40, 100))
 
     if personagem.intangivel:
         desenhar_relogio_intangibilidade(tela, personagem.tempo_intangivel)
 
-def desenhar_gameover(tela, imagem_menu, mensagem_gameover):
+def desenhar_gameover_endless(tela, img_gameover_endless, msg_gameover_endless):
     tela.fill((255, 0, 0))
-    tela.blit(imagem_menu, (0, 0))
+    tela.blit(img_gameover_endless, (0, 0))
 
-    rect = mensagem_gameover.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2.5))
-    tela.blit(mensagem_gameover, rect)
+    rect = msg_gameover_endless.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2.5))
+    tela.blit(msg_gameover_endless, rect)
 
-    botao_reiniciar.desenhar(tela)
-    botao_menu.desenhar(tela)
-    botao_sair_gameover.desenhar(tela)
+    botao_reiniciar_endless.desenhar(tela)
+    botao_menu_endless.desenhar(tela)
+    botao_sair_gameover_endless.desenhar(tela)
 
 def desenhar_ranking(tela, top5):
-    tela.blit(imagem_bg_rank, (0, 0))
+    tela.blit(img_bg_rank, (0, 0))
 
     x_caixa = int(LARGURA_TELA * 0.521)
     y_primeira = int(ALTURA_TELA * 0.393)
@@ -100,7 +100,7 @@ def desenhar_ranking(tela, top5):
         )
         tela.blit(ranking, rect_rank_text)
 
-    tela.blit(imagem_sair_ranking, rect_sair_ranking)
+    tela.blit(img_sair_rank, rect_sair_rank)
 
 def desenhar_modos(tela):
     tela.fill((0, 255, 0))
