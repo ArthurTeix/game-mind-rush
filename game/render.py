@@ -103,10 +103,11 @@ def desenhar_ranking(tela, top5):
     tela.blit(img_sair_rank, rect_sair_rank)
 
 def desenhar_modos(tela):
-    tela.fill((0, 255, 0))
+    tela.fill((12, 183, 242))
 
     botao_modo1.desenhar(tela)
     botao_modo2.desenhar(tela)
 
 def desenhar_rogue(tela):
     tela.fill((255, 0, 0))
+    

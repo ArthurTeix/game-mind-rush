@@ -4,11 +4,12 @@ import pygame
 
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREEN, FPS
 from game.database.db import criar_tabelas, get_top5_pontuacao
-from game.render import desenhar_menu, desenhar_gameover_endless, desenhar_ranking, desenhar_modos, desenhar_rogue, rect_sair_rank
+from game.render import desenhar_menu, desenhar_gameover_endless, desenhar_ranking, desenhar_modos, rect_sair_rank
 from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar_endless, botao_sair_gameover_endless, botao_menu_endless, botao_modo1, botao_modo2
 from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
 from game.render import img_gameover_endless, msg_gameover_endless
 from game.modos.endless.runner import EndlessRunner
+from game.modos.rogue.runner import RogueLike
 
 ESTADOS_CONTA = ("conta", "login", "cadastro")
 
@@ -31,6 +32,7 @@ class Motor:
         # jogador logado: None ou {"id": ..., "usuario": ...}
         self.jogador = None
         self.endless = EndlessRunner()
+        self.rogue = RogueLike(self.tela)
         self.origem_login = "menu"   # para onde o botão "Voltar" do login leva
 
         # telas de conta
@@ -46,7 +48,7 @@ class Motor:
 
     def jogo(self):
         while self.rodando:
-            self.watch.tick(FPS)
+            dt = min(self.watch.tick(FPS) / 1000, 0.05)
 
             self.capturar_eventos()
 
@@ -71,9 +73,6 @@ class Motor:
             elif self.estado == "cadastro":
                 self.tela_cadastro.desenhar(self.tela)
 
-            elif self.estado == "rogue":
-                desenhar_rogue(self.tela)
-
             elif self.estado == "endlessrun":
                
                 vivo = self.endless.atualizar(self.jogador)
@@ -82,6 +81,18 @@ class Motor:
                     self.estado = "gameover_endless"
 
                 self.endless.desenhar(self.tela)
+
+            elif self.estado == "rogue":
+
+                vivo = self.rogue.atualizar(dt)
+
+                if not vivo:
+                    self.estado = "gameover_rogue"
+
+                self.rogue.desenhar()
+
+            elif self.estado == "gameover_rogue":
+                self.rogue.desenhar()
 
             pygame.display.flip()
 
@@ -176,6 +187,7 @@ class Motor:
                         self.endless.iniciar_partida()
                         self.estado = "endlessrun"
                     elif botao_modo2.clicado(evento.pos):
+                        self.rogue.iniciar_partida()
                         self.estado = "rogue"
 
                 elif self.estado == "gameover_endless":
@@ -186,6 +198,15 @@ class Motor:
                         self.estado = "menu"
                     elif botao_sair_gameover_endless.clicado(evento.pos):
                         self.rodando = False
+
+                if self.estado == "rogue":
+                    self.rogue.eventos(evento)
+
+                elif self.estado == "gameover_rogue":
+                    if evento.type == pygame.KEYDOWN:
+                        if evento.key == pygame.K_r:
+                            self.rogue.iniciar_partida()
+                            self.estado = "rogue"
 
     def encerrar_jogo(self):
         self.rodando = False
