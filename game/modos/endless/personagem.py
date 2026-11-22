@@ -2,10 +2,16 @@ import pygame
 from game.modos.endless.obstaculo import GerenciadorObstaculos
 from game.modos.endless.moeda import Moeda, GerenciadorMoeda
 from game.modos.endless.powerup import PowerUp
+from game.modos.endless.personagens import criar_sprite_cor
+import pygame
+from game.modos.endless.obstaculo import GerenciadorObstaculos
+from game.modos.endless.moeda import Moeda, GerenciadorMoeda
+from game.modos.endless.powerup import PowerUp
+from game.modos.endless.personagens import criar_sprite_cor
 
 
 class Personagem:
-    def __init__(self, largura_tela, altura_tela, x, y, largura, altura, caminhos_imagens):
+    def __init__(self, largura_tela, altura_tela, x, y, largura, altura, caminhos_imagens=None, cor=None):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.largura = largura
@@ -43,12 +49,30 @@ class Personagem:
         # --- power-up fantasma: frames restantes de intangibilidade ---
         self.tempo_intangivel = 0
 
+        # --- moeda: ao pegar uma, o runner abre a pergunta ---
+        self.moeda_coletada = False
+
         # --- animação (corrida) ---
+        self.frame_atual = 0
+        self.contador_frames = 0
+        self.intervalo_troca = 6
+
         self.imagens = []
-        for caminho in caminhos_imagens:
-            imagem = pygame.image.load(caminho).convert_alpha()
-            imagem = pygame.transform.scale(imagem, (largura, altura))
-            self.imagens.append(imagem)
+        self.imagens_fantasma = []
+        self.trocar_aparencia(caminhos_imagens, cor)
+
+    def trocar_aparencia(self, caminhos_imagens=None, cor=None):
+        """Define como o personagem é desenhado: pelas imagens (lista de frames)
+        ou, se não houver imagens, por um retângulo colorido."""
+        self.imagens = []
+
+        if caminhos_imagens:
+            for caminho in caminhos_imagens:
+                imagem = pygame.image.load(caminho).convert_alpha()
+                imagem = pygame.transform.scale(imagem, (self.largura, self.altura))
+                self.imagens.append(imagem)
+        else:
+            self.imagens.append(criar_sprite_cor(cor or (200, 200, 200), self.largura, self.altura))
 
         # versão translúcida de cada frame (usada no modo fantasma)
         self.imagens_fantasma = []
@@ -59,7 +83,6 @@ class Personagem:
 
         self.frame_atual = 0
         self.contador_frames = 0
-        self.intervalo_troca = 6
 
     def resetar(self, x, y):
         """Volta o personagem ao estado inicial de uma partida."""
@@ -76,6 +99,7 @@ class Personagem:
         self.vidas = self.vidas_max
         self.invulnerabilidade = 0
         self.tempo_intangivel = 0
+        self.moeda_coletada = False
 
     def pular(self):
         if self.no_chao:
@@ -155,8 +179,12 @@ class Personagem:
             if self.tempo_intangivel == 0:
                 self.invulnerabilidade = max(self.invulnerabilidade, 30)
 
-    def perder_vida(self):
-        if self.invulnerabilidade > 0 or not self.vivo:
+    def perder_vida(self, forcar=False):
+        """Tira uma vida. Com forcar=True ignora a invulnerabilidade
+        (usado quando o jogador erra uma pergunta)."""
+        if not self.vivo:
+            return
+        if self.invulnerabilidade > 0 and not forcar:
             return
 
         self.vidas -= 1
@@ -192,11 +220,275 @@ class Personagem:
                 break
 
     def verificar_colisao_moeda(self, gerenciador_moeda):
+        """Ao pegar a moeda, só avisa (moeda_coletada). Quem abre a pergunta
+        e decide ganhar/perder vida é o EndlessRunner."""
         hitbox = self.rect.inflate(-20, -10)
 
         for moeda in gerenciador_moeda.lista_moeda:
             if hitbox.colliderect(moeda.rect):
-                self.ganhar_vida()
+                self.moeda_coletada = True
+                gerenciador_moeda.remover(moeda)
+                break
+
+    def verificar_colisao_powerup(self, gerenciador_powerup):
+        hitbox = self.rect.inflate(-20, -10)
+
+        for powerup in gerenciador_powerup.lista_powerups:
+            if hitbox.colliderect(powerup.rect):
+                self.ativar_intangibilidade()
+                gerenciador_powerup.remover(powerup)
+                break
+
+    def animar(self):
+        self.contador_frames += 1
+
+        if self.contador_frames >= self.intervalo_troca:
+            self.frame_atual = (self.frame_atual + 1) % len(self.imagens)
+            self.contador_frames = 0
+
+    def atualizar(self, lista_de_chaos, gerenciador_obstaculos, gerenciador_moeda, gerenciador_powerup=None):
+        self.aplicar_gravidade()
+        self.verificar_colisao_com_chao(lista_de_chaos)
+        self.verificar_colisao_obstaculo(gerenciador_obstaculos)
+        self.verificar_colisao_moeda(gerenciador_moeda)
+        if gerenciador_powerup is not None:
+            self.verificar_colisao_powerup(gerenciador_powerup)
+        self.animar()
+        self.verificar_queda_fatal()
+
+        if self.invulnerabilidade > 0:
+            self.invulnerabilidade -= 1
+
+        self.atualizar_intangibilidade()
+
+    def desenhar(self, tela):
+        imagem = self.imagens[self.frame_atual]
+
+        if self.intangivel:
+            # no último segundo alterna entre fantasma e sólido, avisando que vai acabar
+            avisando = self.tempo_intangivel < PowerUp.AVISO_FRAMES
+            if not (avisando and (self.tempo_intangivel // 5) % 2 == 0):
+                imagem = self.imagens_fantasma[self.frame_atual]
+
+        tela.blit(imagem, self.rect)
+
+class Personagem:
+    def __init__(self, largura_tela, altura_tela, x, y, largura, altura, caminhos_imagens=None, cor=None):
+        self.largura_tela = largura_tela
+        self.altura_tela = altura_tela
+        self.largura = largura
+        self.altura = altura
+
+        self.rect = pygame.Rect(x, y, largura, altura)
+
+        # --- física vertical ---
+        # pos_y guarda a posição como float: o Rect só aceita inteiros, e
+        # somar 0.6 direto no rect.y fazia o personagem "piscar" no chão
+        # (no_chao alternava True/False e o pulo falhava a cada 2 frames)
+        self.pos_y = float(y)
+        self.bottom_anterior = self.rect.bottom
+        self.velocidade_y = 0
+        self.gravidade = 1
+        self.forca_salto = -20
+
+        # --- mergulho rápido (estilo Subway Surfers) ---
+        self.velocidade_mergulho = 28   # velocidade para baixo ao mergulhar
+        self.velocidade_terminal = 30   # limite de velocidade de queda
+        self.mergulhando = False
+
+        # --- controle de estado ---
+        self.no_chao = False
+        self.vivo = True
+
+        self.vidas_max = 3
+        self.vidas = 3
+
+        self.x_inicial = x
+        self.y_inicial = y
+
+        self.invulnerabilidade = 0
+
+        # --- power-up fantasma: frames restantes de intangibilidade ---
+        self.tempo_intangivel = 0
+
+        # --- moeda: ao pegar uma, o runner abre a pergunta ---
+        self.moeda_coletada = False
+
+        # --- animação (corrida) ---
+        self.frame_atual = 0
+        self.contador_frames = 0
+        self.intervalo_troca = 6
+
+        self.imagens = []
+        self.imagens_fantasma = []
+        self.trocar_aparencia(caminhos_imagens, cor)
+
+    def trocar_aparencia(self, caminhos_imagens=None, cor=None):
+        """Define como o personagem é desenhado: pelas imagens (lista de frames)
+        ou, se não houver imagens, por um retângulo colorido."""
+        self.imagens = []
+
+        if caminhos_imagens:
+            for caminho in caminhos_imagens:
+                imagem = pygame.image.load(caminho).convert_alpha()
+                imagem = pygame.transform.scale(imagem, (self.largura, self.altura))
+                self.imagens.append(imagem)
+        else:
+            self.imagens.append(criar_sprite_cor(cor or (200, 200, 200), self.largura, self.altura))
+
+        # versão translúcida de cada frame (usada no modo fantasma)
+        self.imagens_fantasma = []
+        for imagem in self.imagens:
+            fantasma = imagem.copy()
+            fantasma.set_alpha(110)
+            self.imagens_fantasma.append(fantasma)
+
+        self.frame_atual = 0
+        self.contador_frames = 0
+
+    def resetar(self, x, y):
+        """Volta o personagem ao estado inicial de uma partida."""
+        self.rect.x = x
+        self.rect.y = y
+        self.pos_y = float(y)
+        self.bottom_anterior = self.rect.bottom
+        self.velocidade_y = 0
+        self.no_chao = False
+        self.mergulhando = False
+        self.vivo = True
+        self.frame_atual = 0
+        self.contador_frames = 0
+        self.vidas = self.vidas_max
+        self.invulnerabilidade = 0
+        self.tempo_intangivel = 0
+        self.moeda_coletada = False
+
+    def pular(self):
+        if self.no_chao:
+            self.velocidade_y = self.forca_salto
+            self.no_chao = False
+            self.mergulhando = False
+
+    def descer(self):
+        """Mergulho rápido: só funciona no ar. Corta a subida na hora
+        (se estiver subindo) e joga o personagem para o chão."""
+        if not self.no_chao and not self.mergulhando:
+            self.velocidade_y = self.velocidade_mergulho
+            self.mergulhando = True
+
+    def aplicar_gravidade(self):
+        # guarda onde os pés estavam ANTES de mover neste frame
+        self.bottom_anterior = self.rect.bottom
+
+        self.velocidade_y += self.gravidade
+        self.velocidade_y = min(self.velocidade_y, self.velocidade_terminal)
+        self.pos_y += self.velocidade_y
+        self.rect.y = round(self.pos_y)
+
+    def verificar_colisao_com_chao(self, lista_de_chaos):
+        self.no_chao = False
+
+        # hitbox um pouco menor que a imagem, para não ser injusto
+        hitbox = self.rect.inflate(-20, -10)
+
+        for chao in lista_de_chaos:
+            sobrepoe_horizontal = (
+                self.rect.right > chao.rect.left and self.rect.left < chao.rect.right
+            )
+
+            # com o mergulho a velocidade é alta, então o personagem pode
+            # "pular" por cima da colisão num único frame. Por isso também
+            # checamos se os pés cruzaram o topo do bloco neste frame.
+            cruzou_topo = (
+                sobrepoe_horizontal
+                and self.bottom_anterior <= chao.rect.top
+                and self.rect.bottom >= chao.rect.top
+            )
+
+            if not self.rect.colliderect(chao.rect) and not cruzou_topo:
+                continue
+
+            # pousar em cima: está descendo e os pés estavam acima do
+            # topo do bloco no frame passado (10px de tolerância)
+            if self.velocidade_y >= 0 and self.bottom_anterior <= chao.rect.top + 10:
+                self.rect.bottom = chao.rect.top
+                self.pos_y = float(self.rect.y)
+                self.velocidade_y = 0
+                self.no_chao = True
+                self.mergulhando = False
+                break
+
+            # qualquer outra batida (lateral ou por baixo) é fatal
+            if hitbox.colliderect(chao.rect):
+                self.vivo = False
+
+    @property
+    def intangivel(self):
+        return self.tempo_intangivel > 0
+
+    def ativar_intangibilidade(self, frames=PowerUp.DURACAO_FRAMES):
+        """Liga o modo fantasma. Pegar outro power-up reinicia a contagem."""
+        if not self.vivo:
+            return
+        self.tempo_intangivel = frames
+
+    def atualizar_intangibilidade(self):
+        if self.tempo_intangivel > 0:
+            self.tempo_intangivel -= 1
+
+            # se o efeito acabar com um obstáculo em cima do personagem,
+            # dá meio segundo de proteção para ele sair sem tomar dano
+            if self.tempo_intangivel == 0:
+                self.invulnerabilidade = max(self.invulnerabilidade, 30)
+
+    def perder_vida(self, forcar=False):
+        """Tira uma vida. Com forcar=True ignora a invulnerabilidade
+        (usado quando o jogador erra uma pergunta)."""
+        if not self.vivo:
+            return
+        if self.invulnerabilidade > 0 and not forcar:
+            return
+
+        self.vidas -= 1
+
+        if self.vidas <= 0:
+            self.vidas = 0
+            self.vivo = False
+        else:
+            self.invulnerabilidade = 60
+
+    def ganhar_vida(self):
+        if not self.vivo:
+            return
+
+        # (antes somava +1 e depois +1 de novo dentro do min, dando 2 vidas)
+        self.vidas = min(self.vidas + 1, self.vidas_max)
+
+    def verificar_queda_fatal(self):
+        if self.rect.y > self.altura_tela:
+            self.vivo = False
+
+    def verificar_colisao_obstaculo(self, gerenciador_obstaculos):
+        # fantasma: atravessa os obstáculos (eles não somem nem machucam)
+        if self.intangivel:
+            return
+
+        hitbox = self.rect.inflate(-20, -10)
+
+        for obstaculo in gerenciador_obstaculos.lista_obstaculos:
+            if hitbox.colliderect(obstaculo.rect):
+                self.perder_vida()
+                gerenciador_obstaculos.remover(obstaculo)
+                break
+
+    def verificar_colisao_moeda(self, gerenciador_moeda):
+        """Ao pegar a moeda, só avisa (moeda_coletada). Quem abre a pergunta
+        e decide ganhar/perder vida é o EndlessRunner."""
+        hitbox = self.rect.inflate(-20, -10)
+
+        for moeda in gerenciador_moeda.lista_moeda:
+            if hitbox.colliderect(moeda.rect):
+                self.moeda_coletada = True
                 gerenciador_moeda.remover(moeda)
                 break
 
