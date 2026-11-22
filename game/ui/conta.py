@@ -4,6 +4,7 @@ from game.configuracoes import LARGURA_TELA, ALTURA_TELA, FONTE_MENSAGEM
 from game.util.cores import cores
 from game.util import validacao
 from game.database import db
+from game.ui.botao import Botao
 
 # aparência
 LARGURA_CAMPO = 520
@@ -12,7 +13,6 @@ PASSO_CAMPO = 92                 # distância vertical entre um campo e o próxi
 COR_FUNDO_CAMPO = (45, 45, 45)
 COR_BORDA = (110, 110, 110)
 COR_PLACEHOLDER = (110, 110, 110)
-COR_BOTAO_NEUTRO = (90, 90, 90)
 LARGURA_MAX_MSG = min(int(LARGURA_TELA * 0.8), 900)
 
 # regras ao vivo (abaixo de cada campo do cadastro)
@@ -25,7 +25,6 @@ FONTE_TITULO_TELA = pygame.font.SysFont('arial', 56)
 FONTE_ROTULO = pygame.font.SysFont('arial', 24)
 FONTE_CAMPO = pygame.font.SysFont('arial', 30)
 FONTE_MSG = pygame.font.SysFont('arial', 26)
-FONTE_BOTAO = pygame.font.SysFont('arial', 30, bold=True)
 FONTE_PEQUENA = pygame.font.SysFont('arial', 20)
 FONTE_REGRA = pygame.font.SysFont('arial', 18)
 
@@ -230,21 +229,10 @@ class CampoTexto:
             tela.blit(surf, surf.get_rect(center=self.rect_olho.center))
         self._desenhar_regras(tela)
 
-class BotaoTexto:
-    def __init__(self, texto, centro, largura=240, altura=56, cor=None):
-        self.texto = texto
-        self.cor = cor or cores['azul-jogo']
-        self.rect = pygame.Rect(0, 0, largura, altura)
-        self.rect.center = centro
-    def desenhar(self, tela):
-        cor = self.cor
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
-            cor = tuple(min(255, c + 35) for c in cor)
-        pygame.draw.rect(tela, cor, self.rect, border_radius=10)
-        surf = FONTE_BOTAO.render(self.texto, True, cores['branco'])
-        tela.blit(surf, surf.get_rect(center=self.rect.center))
-    def clicado(self, pos):
-        return self.rect.collidepoint(pos)
+class BotaoImagem(Botao):
+    def __init__(self, centro, imagem_normal, imagem_hover=None):
+        super().__init__(imagem_inicial=imagem_normal, centro=centro, imagem_hover=imagem_hover)
+
 # telas
 
 class TelaConfig:
@@ -252,10 +240,10 @@ class TelaConfig:
     def __init__(self):
         cx = LARGURA_TELA // 2
         self.y_inicial = int(ALTURA_TELA * 0.38)
-        self.botao_login = BotaoTexto("Entrar", (cx, 0), largura=300)
-        self.botao_cadastro = BotaoTexto("Cadastrar-se", (cx, 0), largura=300)
-        self.botao_logout = BotaoTexto("Sair da conta", (cx, 0), largura=300)
-        self.botao_voltar = BotaoTexto("Voltar", (cx, 0), largura=300, cor=COR_BOTAO_NEUTRO)
+        self.botao_login = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_entrar.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_entrar_hover.png")
+        self.botao_cadastro = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_cadastro.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_cadastro_hover.png")
+        self.botao_logout = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_sair_da_conta.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_sair_da_conta_hover.png")
+        self.botao_voltar = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_voltar.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_voltar_hover.png")
 
     def _botoes_ativos(self, jogador):
         if jogador:
@@ -302,13 +290,13 @@ class _TelaFormulario:
         self.botao_principal = None
         self.botao_voltar = None
 
-    def _criar_rodape(self, texto_principal, altura_extra=0):
+    def _criar_rodape(self, imagem_normal, imagem_hover, altura_extra=0):
         """Posiciona mensagem e botões logo abaixo do último campo (e das regras dele, se houver)."""
         cx = LARGURA_TELA // 2
         self.y_mensagem = self.campos[-1].rect.bottom + 14 + altura_extra
         y_botoes = self.y_mensagem + 95
-        self.botao_principal = BotaoTexto(texto_principal, (cx - 140, y_botoes))
-        self.botao_voltar = BotaoTexto("Voltar", (cx + 140, y_botoes), cor=COR_BOTAO_NEUTRO)
+        self.botao_principal = BotaoImagem(centro=(cx - 140, y_botoes), imagem_normal=imagem_normal, imagem_hover=imagem_hover)
+        self.botao_voltar = BotaoImagem(centro=(cx + 140, y_botoes), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_voltar.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_voltar_hover.png")
 
     def definir_mensagem(self, texto, erro=True):
         self.mensagem = texto
@@ -388,7 +376,7 @@ class TelaLogin(_TelaFormulario):
                                         max_len=16, permitido=_permitido_usuario)
         self.campo_senha = CampoTexto("Senha", x, y0 + PASSO_CAMPO, senha=True)
         self.campos = [self.campo_usuario, self.campo_senha]
-        self._criar_rodape("Entrar")
+        self._criar_rodape("./assets/img/botoes/botoes_cadastro/botao_entrar.png", "./assets/img/botoes/botoes_cadastro/botao_entrar_hover.png")
         self.jogador_logado = None
     def enviar(self):
         usuario = self.campo_usuario.texto.strip()
@@ -435,7 +423,7 @@ class TelaCadastro(_TelaFormulario):
         self.campos = [self.campo_usuario, self.campo_email,
                         self.campo_senha, self.campo_repetir_senha,
                         self.campo_nascimento]
-        self._criar_rodape("Cadastrar", altura_extra=ALTURA_REGRAS)
+        self._criar_rodape("./assets/img/botoes/botoes_cadastro/botao_cadastro.png", "./assets/img/botoes/botoes_cadastro/botao_cadastro_hover.png", altura_extra=ALTURA_REGRAS)
         self.usuario_criado = ""
 
     def enviar(self):

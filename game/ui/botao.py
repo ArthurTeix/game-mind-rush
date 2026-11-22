@@ -1,7 +1,6 @@
 import pygame
 from game.configuracoes import LARGURA_TELA, ALTURA_TELA
 
-
 class Botao:
     def __init__(self, imagem_inicial, centro=(0, 0), imagem_hover=None):
         self.imagem = pygame.image.load(imagem_inicial)
