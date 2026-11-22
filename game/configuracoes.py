@@ -20,6 +20,11 @@ FONTE_PONTOS = pygame.font.Font('./assets/fontes/aseprite.ttf', 60)
 FONTE_VIDAS = pygame.font.Font('./assets/fontes/aseprite.ttf', 60)
 FONTE_RELOGIO = pygame.font.Font('./assets/fontes/aseprite.ttf', 40)
 
+# fontes das telas de escolha de personagem e de pergunta
+FONTE_TEXTO_GRANDE = pygame.font.SysFont('arial', 36)
+FONTE_TEXTO = pygame.font.SysFont('arial', 28)
+FONTE_TEXTO_PEQUENA = pygame.font.SysFont('arial', 20)
+
 # taxa de quadros
 FPS = 60
 
