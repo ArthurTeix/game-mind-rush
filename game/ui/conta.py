@@ -21,11 +21,11 @@ RAIO_MARCADOR = 5
 ESPACO_ENTRE_REGRAS = 18
 COR_REGRA_OK = cores['verde']
 COR_REGRA_PENDENTE = cores['vermelho']
-FONTE_TITULO_TELA = pygame.font.SysFont('arial', 56)
+FONTE_TITULO_TELA = pygame.font.Font('./assets/fontes/aseprite.ttf', 56)
 FONTE_ROTULO = pygame.font.SysFont('arial', 24)
 FONTE_CAMPO = pygame.font.SysFont('arial', 30)
 FONTE_MSG = pygame.font.SysFont('arial', 26)
-FONTE_PEQUENA = pygame.font.SysFont('arial', 20)
+FONTE_PEQUENA = pygame.font.Font('./assets/fontes/aseprite.ttf', 20)
 FONTE_REGRA = pygame.font.SysFont('arial', 18)
 
 # helpers
