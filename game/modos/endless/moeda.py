@@ -4,7 +4,7 @@ from random import randint
 class Moeda:
     LARGURA = 50
     ALTURA = 50
-    ALTURA_ACIMA = 20 
+    ALTURA_ACIMA = 20
     CHANCE = 30
     _imagem_moeda = None
 

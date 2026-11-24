@@ -11,13 +11,13 @@ class Inimigos(pygame.sprite.Sprite):
     VIDA = 1
     VELOCIDADE = 100
     DANO = 10
- 
+
     def __init__(self, pos, alvo, grupos, grupo_pontos, vida=1, velocidade=100, dano=10):
         super().__init__(grupos)
 
         self.grupo_pontos = grupo_pontos
         self.alvo = alvo
- 
+
         self.vida_max = vida if vida is not None else self.VIDA
         self.vida = self.vida_max
 
@@ -37,7 +37,7 @@ class Inimigos(pygame.sprite.Sprite):
 
         self.posicao = pygame.Vector2(self.rect.topleft)
         self.direcao = pygame.Vector2()
- 
+
     def carregar_imagem(self):
         if self.__class__.IMAGEM is None:
             try:
@@ -74,7 +74,7 @@ class Inimigos(pygame.sprite.Sprite):
 
     def movimentar(self, dt):
             self.posicao += self.direcao * self.velocidade * dt
-            self.rect.topleft = (round(self.posicao.x), round(self.posicao.y))  
+            self.rect.topleft = (round(self.posicao.x), round(self.posicao.y))
 
     def update(self, dt):
 
@@ -93,16 +93,16 @@ class Inimigos(pygame.sprite.Sprite):
                 self.kill()
 
             return
-    
+
         self.perseguir()
         self.movimentar(dt)
 
- 
+
     def levar_dano(self, quantidade=1):
         """Devolve True se o vilão morreu com esse golpe."""
         if self.morrendo:
             return False
-    
+
         self.vida -= quantidade
         if self.vida <= 0:
             self.morrendo = True
@@ -110,13 +110,13 @@ class Inimigos(pygame.sprite.Sprite):
             self.timer_morte = self.tempo_morte
 
             return True
-        
+
         return False
- 
+
     def desenhar_barra_de_vida(self, tela):
         if self.vida_max <= 1:
             return
-        
+
         largura = self.rect.width
 
         barra = pygame.Rect(self.rect.x, self.rect.y - 8, largura, 5)
@@ -147,7 +147,7 @@ class Erro(Inimigos):
 
     CAMINHO_IMAGEM = "./assets/img/personagens/inimigos/erro_estatico.png"
     CAMINHO_IMAGEM_MORTE = "./assets/img/personagens/inimigos/erro_morto.png"
-    
+
     VIDA = 1
     VELOCIDADE = 200
     DANO = 10
@@ -157,12 +157,12 @@ class Erro(Inimigos):
 class Firewall(Inimigos):
     LARGURA = 64
     ALTURA = 64
-    
+
     CAMINHO_IMAGEM = "./assets/img/personagens/inimigos/firewall_estatico.png"
     CAMINHO_IMAGEM_MORTE = "./assets/img/personagens/inimigos/firewall_morto.png"
-        
+
     VIDA = 2
     VELOCIDADE = 70
     DANO = 20
-    
+
     COR = (50, 0, 50)

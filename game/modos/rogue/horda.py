@@ -3,15 +3,15 @@ import random
 from game.modos.rogue.inimigos import Bug, Erro, Firewall
 
 class GerenciadorHordas:
-    PAUSA_ENTRE_HORDAS = 3.0             
+    PAUSA_ENTRE_HORDAS = 3.0
     PAUSA_INICIAL = 2.0
-    HORDAS_POR_NOVO_VILAO = 2            
-    TEMPO_AVISO = 3.0                    
-    
+    HORDAS_POR_NOVO_VILAO = 2
+    TEMPO_AVISO = 3.0
+
     TIPOS = [
         {"classe": Bug, "vida": 1, "velocidade": 100, "dano": 10},
         {"classe": Erro, "vida": 1, "velocidade": 200, "dano": 10},
-        {"classe": Firewall, "vida": 2, "velocidade": 70, "dano": 20},   
+        {"classe": Firewall, "vida": 2, "velocidade": 70, "dano": 20},
     ]
 
     def __init__(self, alvo, area_tela):
@@ -19,20 +19,20 @@ class GerenciadorHordas:
         self.area = area_tela
         self.grupo = pygame.sprite.Group()
 
-        self.horda = 0                   
-        self.estado = "pausa"            
+        self.horda = 0
+        self.estado = "pausa"
         self.tempo_pausa = self.PAUSA_INICIAL
-        self.para_criar = 0              
+        self.para_criar = 0
         self.tempo_spawn = 0.0
         self.config = self.dificuldade(1)
         self.pontos = pygame.sprite.Group()
 
-        self.novo_vilao = None           
-        self.aviso_tempo = 0.0           
+        self.novo_vilao = None
+        self.aviso_tempo = 0.0
 
         self.fonte_horda = pygame.font.Font(None, 28)
 
-        
+
         self.largura_barra = 800
         self.altura_barra = 24
         self.y_barra = 80
@@ -40,9 +40,9 @@ class GerenciadorHordas:
     def dificuldade(self, n):
         """O que cresce a cada horda: quantidade, ritmo de surgimento e vilões na tela."""
         return {
-            "quantidade": 10 + 10 * (n - 1),                       
-            "intervalo": max(0.10, 0.5 * (0.92 ** (n - 1))),     
-            "simultaneos": min(60, 30 + 2 * (n - 1)),             
+            "quantidade": 10 + 10 * (n - 1),
+            "intervalo": max(0.10, 0.5 * (0.92 ** (n - 1))),
+            "simultaneos": min(60, 30 + 2 * (n - 1)),
         }
 
     @property
@@ -56,7 +56,7 @@ class GerenciadorHordas:
 
     def sortear_tipo(self):
         tipos = self.tipos_disponiveis()
-        
+
         pesos = [1] * (len(tipos) - 1) + [2]
         return random.choices(tipos, weights=pesos)[0]
 
@@ -67,7 +67,7 @@ class GerenciadorHordas:
         self.tempo_spawn = 0.0
         self.estado = "ativa"
 
-        
+
         indice = (self.horda - 1) // self.HORDAS_POR_NOVO_VILAO
         if (self.horda - 1) % self.HORDAS_POR_NOVO_VILAO == 0 and 0 < indice < len(self.TIPOS):
             self.novo_vilao = self.TIPOS[indice]["classe"]
@@ -108,8 +108,8 @@ class GerenciadorHordas:
         else:
             self.tempo_spawn -= dt
             pode_criar = (self.para_criar > 0
-                          and self.tempo_spawn <= 0
-                          and len(self.grupo) < self.config["simultaneos"])
+                            and self.tempo_spawn <= 0
+                            and len(self.grupo) < self.config["simultaneos"])
             if pode_criar:
                 self.criar_vilao()
                 self.para_criar -= 1
@@ -140,29 +140,29 @@ class GerenciadorHordas:
 
     def desenhar_barra_horda(self, tela):
 
-        
+
         if self.horda == 0 or self.estado != "ativa":
             return
 
         restantes = self.restantes
         total = self.config["quantidade"]
 
-        
+
         progresso = restantes / total if total > 0 else 0
 
         largura_preenchida = int(self.largura_barra * progresso)
 
-        
+
         x = (tela.get_width() - self.largura_barra) // 2
 
-        
+
         pygame.draw.rect(
             tela,
             (50, 50, 50),
             (x, self.y_barra, self.largura_barra, self.altura_barra),
         )
 
-        
+
         if largura_preenchida > 0:
             pygame.draw.rect(
                 tela,
@@ -170,7 +170,7 @@ class GerenciadorHordas:
                 (x, self.y_barra, largura_preenchida, self.altura_barra),
             )
 
-        
+
         pygame.draw.rect(
             tela,
             (255, 255, 255),

@@ -54,9 +54,9 @@ class GerenciadorObstaculos:
 
     @property
     def lista_obstaculos(self):
-        return [o for o in self._por_chao.values() if o is not None]    
+        return [o for o in self._por_chao.values() if o is not None]
 
-    
+
     def atualizar(self, lista_chaos, velocidade):
         for obstaculo in self.lista_obstaculos:
             obstaculo.mover(velocidade)
