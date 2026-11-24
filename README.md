@@ -90,4 +90,4 @@ Os Fluxogramas contidos no link acima mostra todos os tratamentos de Fluxo Princ
 
 Arthur Teixeira - Desenvolvimento | Organização do Projeto | Design <br>
 Esthefany Vitória - Design | Desenvolvimento | Organização do Projeto <br>
-Richardson - Organização do Projeto | Desenvolvimento do Artigo
+Richardson Barbosa - Organização do Projeto | Desenvolvimento do Artigo <br>
