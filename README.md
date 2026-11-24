@@ -59,13 +59,12 @@ python main.py
 
 | Funcionalidade | Descrição |
 |---|---|
-| Troca de Senha | Permite ao jogador atualizar sua senha de acesso. |
-| Troca de Nome de Usuário | Permite ao jogador atualizar seu nome de usuário. |
-| Banco de Questões | Armazena e disponibiliza questões utilizadas durante o jogo. |
-| Apagar Conta | Permite ao jogador excluir sua conta do sistema. |
-| Modo Flashcard | O próprio usuário adiciona as perguntas a serem apresentadas durante o jogo. |
-| Power-ups | Adiciona recursos especiais que podem beneficiar o jogador durante a partida. |
+| Seleção de Personagens | Permite ao jogador a escolher um personagem referente a um curso em específico antes de começar o modo Endless Runner. |
 | Moeda de Pergunta | Permite ao jogador coletar moedas durante a partida e responder às perguntas. |
+| Perguntas e Respostas em Múltipla Escolha | Ao coletar a Moeda de Pergunta, o sistema exibe uma pergunta de uma área de conhecimento específica e o jogador precisa responder para avançar. Se o usuário acertar a resposta, ele ganha uma vida (respeitando o limite de 3 vidas), caso contrário ele perde uma vida. |
+| Banco de Questões | Armazena e disponibiliza questões utilizadas durante o jogo. |
+| Power-up: Fantasma | Adiciona um recurso especial que pode deixar o personagem intangível por 5 segundos durante a partida. |
+| Modo Rogue-Like | O jogador precisa enfrentar Ondas/Hordas. A cada fim de uma Onda, o usuário pode escolher um benefício para prosseguir no jogo. |
 
 ---
 
