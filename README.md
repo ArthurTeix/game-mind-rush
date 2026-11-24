@@ -52,6 +52,7 @@ python main.py
 | Login | Autenticação do jogador para acesso ao sistema. |
 | Sistema de Jogo | Execução da partida com movimentação e desvio de obstáculos. |
 | Sistema de Pontuação | Pontuação atribuída ao jogador ao esquivar dos obstáculos durante a partida. |
+| Ranking | Armazena as 5 melhores pontuações conquistadas pelo jogador. |
 
 ---
 
