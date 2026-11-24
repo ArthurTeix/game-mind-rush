@@ -12,18 +12,20 @@ Estudantes em geral e aspirantes a universitários que buscam uma forma mais din
 
 ## ✅ Funcionalidades atuais
 
+- 👤 Sistema de cadastro e login de usuário
 - 🏃 Boneco esquivando de obstáculos (gameplay básico de *endless runner*)
-
-## 🛠️ Funcionalidades a incrementar
-
+- 🤺 Modo RogueLike (Modo onde o joagdor enfrenta ondas e faz upgrades no personagem)
+- 🧑‍🎓 Personagens temáticos por curso (Computação, Veterinária, Letras, História, etc)
 - ❓ Sistema de perguntas e respostas vinculado a moedas coletadas durante a corrida
 - ❤️ Sistema de vidas: acertos recuperam vida, erros reduzem a velocidade/dificultam o jogo
 - 🏆 Sistema de pontuação baseado em acertos, desvios de obstáculos e perguntas respondidas
 - ⚡ Power-ups especiais (super velocidade, intangibilidade, entre outros)
+
+## 🛠️ Funcionalidades a incrementar
+
 - 🎴 Modo Anki: cadastro de perguntas e respostas personalizadas para estudo livre
-- 🧑‍🎓 Personagens temáticos por curso (Computação, Veterinária, Letras, História)
 - 🌟 Personagens e conquistas especiais desbloqueáveis
-- 👤 Sistema de cadastro e login de usuário
+
 
 ## 🚀 Como executar
 
