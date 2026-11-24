@@ -69,10 +69,22 @@ python main.py
 ---
 
 ## Fluxogramas
-<a href="https://drive.google.com/file/d/1fE1Pq1ITFS5ljT3zZ30k4zELO8ufPyjS/view?usp=drive_link">Clique aqui para acessar os fluxogramas.<a>
+<a href="https://drive.google.com/file/d/1fE1Pq1ITFS5ljT3zZ30k4zELO8ufPyjS/view?usp=drive_link">Para acessar os fluxogramas, clique aqui.<a>
+
+Os Fluxogramas contidos no link acima mostra todos os tratamentos de Fluxo Principal, Alternativos e de Erros. Sendo Esses:
+
+1. Menu e Seleção de Personagens;
+2. Jogo;
+3. Cadastro;
+4. Power-up;
+5. Login;
+6. Alterar Nome de Usuário/Senha;
+7. Apagar Conta;
+8. Banco de Questões;
+9. Modo Flashcard;
 
 ## 👥 Integrantes
 
 Arthur Teixeira - Desenvolvimento | Organização do Projeto | Design <br>
 Esthefany Vitória - Design | Desenvolvimento | Organização do Projeto <br>
-Richardson - Organização do Projeto | Design | Desenvolvimento
+Richardson - Organização do Projeto | Desenvolvimento do Artigo
