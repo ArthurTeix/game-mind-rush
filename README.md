@@ -4,7 +4,7 @@
 
 **Mind Rush** é um jogo educacional no estilo *endless runner*, desenvolvido como projeto interdisciplinar da **Universidade Federal Rural de Pernambuco (UFRPE)**. A proposta é transformar o estudo e a revisão de conteúdos em uma experiência dinâmica e divertida: enquanto o jogador corre e desvia de obstáculos, ele coleta moedas que abrem perguntas relacionadas a diferentes cursos da universidade, unindo diversão e aprendizado em uma única jogada.
 
-Cada personagem do jogo representa um curso (como Computação, Veterinária, Letras e História), e responder corretamente às perguntas garante vidas extras, enquanto errar torna a partida mais desafiadora. O jogo também contará com um modo de estudo personalizado (estilo flashcards), onde o próprio jogador pode cadastrar suas perguntas e respostas para revisar qualquer conteúdo de forma mais leve e engajante.
+Cada personagem do jogo representa um curso (como Computação, Veterinária, Letras, História e dentre outros), e responder corretamente às perguntas garante vidas extras, enquanto errar torna a partida mais desafiadora. O jogo também contará com um modo de estudo personalizado (estilo flashcards), onde o próprio jogador pode cadastrar suas perguntas e respostas para revisar qualquer conteúdo de forma mais leve e engajante.
 
 ## 🎯 Público-alvo
 
@@ -25,7 +25,7 @@ Estudantes em geral e aspirantes a universitários que buscam uma forma mais din
 
 - 🎴 Modo Anki: cadastro de perguntas e respostas personalizadas para estudo livre
 - 🌟 Personagens e conquistas especiais desbloqueáveis
-
+- 🏗 Novos tipos de obstáculos
 
 ## 🚀 Como executar
 
