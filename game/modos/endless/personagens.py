@@ -11,7 +11,7 @@ import pygame
 #   requer_login  -> True = só fica liberado para quem fez login
 PERSONAGENS = [
     {
-        "id": "endless",
+        "id": "computacao",
         "nome": "Computação",
         "cor": (12, 183, 242),
         "imagens": ["./assets/img/personagens/endless/pc_pos0.png",
