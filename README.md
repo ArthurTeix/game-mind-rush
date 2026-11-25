@@ -1,93 +1,324 @@
 # 🧠 Mind Rush
 
-## 📖 Sobre o projeto
+**Mind Rush** é um jogo educacional desenvolvido como projeto interdisciplinar da **Universidade Federal Rural de Pernambuco (UFRPE)**. Seu objetivo é transformar o estudo e a revisão de conteúdos acadêmicos em uma experiência dinâmica e interativa, combinando elementos de jogos de ação, progressão e aprendizagem.
 
-**Mind Rush** é um jogo educacional no estilo *endless runner*, desenvolvido como projeto interdisciplinar da **Universidade Federal Rural de Pernambuco (UFRPE)**. A proposta é transformar o estudo e a revisão de conteúdos em uma experiência dinâmica e divertida: enquanto o jogador corre e desvia de obstáculos, ele coleta moedas que abrem perguntas relacionadas a diferentes cursos da universidade, unindo diversão e aprendizado em uma única jogada.
+O jogo combina os gêneros **Endless Runner** e **Rogue-Like**, permitindo que os jogadores enfrentem obstáculos, coletem moedas, respondam perguntas e enfrentem hordas de inimigos. Cada personagem representa um curso universitário, relacionando a experiência de jogo a diferentes áreas do conhecimento.
 
-Cada personagem do jogo representa um curso (como Computação, Veterinária, Letras, História e dentre outros), e responder corretamente às perguntas garante vidas extras, enquanto errar torna a partida mais desafiadora. O jogo também contará com um modo de estudo personalizado (estilo flashcards), onde o próprio jogador pode cadastrar suas perguntas e respostas para revisar qualquer conteúdo de forma mais leve e engajante.
+Além disso, o projeto prevê um modo de estudo personalizado, no qual os próprios jogadores poderão cadastrar perguntas e respostas para utilizar durante as partidas.
+
+---
 
 ## 🎯 Público-alvo
 
-Estudantes em geral e aspirantes a universitários que buscam uma forma mais dinâmica, leve e envolvente de estudar e revisar conteúdos.
+Estudantes em geral e aspirantes a universitários que buscam uma maneira mais dinâmica, acessível e divertida de estudar e revisar conteúdos acadêmicos.
 
-## ✅ Funcionalidades atuais
+---
 
-- 👤 Sistema de cadastro e login de usuário
-- 🏃 Boneco esquivando de obstáculos (gameplay básico de *endless runner*)
-- 🤺 Modo RogueLike (Modo onde o joagdor enfrenta ondas e faz upgrades no personagem)
-- 🧑‍🎓 Personagens temáticos por curso (Computação, Veterinária, Letras, História, etc)
-- ❓ Sistema de perguntas e respostas vinculado a moedas coletadas durante a corrida
-- ❤️ Sistema de vidas: acertos recuperam vida, erros reduzem a velocidade/dificultam o jogo
-- 🏆 Sistema de pontuação baseado em acertos, desvios de obstáculos e perguntas respondidas
-- ⚡ Power-ups especiais (super velocidade, intangibilidade, entre outros)
+## 🛠️ Tecnologias utilizadas
 
-## 🛠️ Funcionalidades a incrementar
+- **Python:** linguagem utilizada no desenvolvimento do jogo.
+- **Pygame:** biblioteca utilizada para desenvolvimento de jogos e recursos gráficos, conforme as dependências do projeto.
+- **Git e GitHub:** ferramentas de versionamento e gerenciamento do código-fonte.
 
-- 🎴 Modo Anki: cadastro de perguntas e respostas personalizadas para estudo livre
-- 🌟 Personagens e conquistas especiais desbloqueáveis
-- 🏗 Novos tipos de obstáculos
+---
 
-## 🚀 Como executar
+## 📁 Estrutura do projeto
 
-1. Clone o repositório:
+O projeto está organizado em diretórios e módulos que separam os recursos visuais, as funcionalidades do jogo, os modos de gameplay e os arquivos responsáveis pela inicialização e funcionamento da aplicação.
+
+```text
+Mind-Rush/
+│
+├── assets/
+│   ├── fontes/
+│   └── img/
+│
+├── game/
+│   ├── database/
+│   ├── elements/
+│   ├── modos/
+│   │   ├── endless/
+│   │   └── rogue/
+│   ├── ui/
+│   ├── util/
+│   ├── configuracoes.py
+│   ├── motor.py
+│   └── render.py
+│
+├── .editorconfig
+├── .gitignore
+├── main.py
+├── README.md
+└── requirements.txt
+```
+
+### Descrição dos diretórios
+
+| Diretório | Descrição |
+|---|---|
+| `assets/` | Armazena os recursos externos utilizados pelo jogo, como imagens e fontes. Centraliza os arquivos necessários para a composição visual da aplicação. |
+| `assets/fontes/` | Armazena os arquivos de fontes tipográficas utilizados na interface e nos elementos visuais do jogo. |
+| `assets/img/` | Armazena as imagens e demais recursos gráficos utilizados nos menus, personagens, cenários e elementos da gameplay. |
+| `game/` | Diretório principal da lógica do jogo. Reúne os módulos responsáveis pelos sistemas, modos de jogo, interfaces, dados e funcionalidades auxiliares. |
+| `game/database/` | Destinado ao gerenciamento e armazenamento dos dados utilizados pelo jogo, incluindo informações relacionadas aos jogadores e banco de questões. |
+| `game/elements/` | Reúne os elementos que compõem a gameplay, como objetos, componentes e entidades utilizados durante as partidas. |
+| `game/modos/` | Organiza os diferentes modos de jogo, mantendo suas implementações separadas. |
+| `game/modos/endless/` | Reúne os módulos e funcionalidades específicos do modo Endless Runner, como mecânicas de corrida, movimentação, obstáculos e coleta de moedas. |
+| `game/modos/rogue/` | Reúne os módulos e funcionalidades específicos do modo Rogue-Like, incluindo ondas de inimigos, combate e sistema de melhorias. |
+| `game/ui/` | Centraliza os componentes de interface gráfica, telas, menus e elementos de interação com o jogador. |
+| `game/util/` | Armazena funções auxiliares e recursos utilitários utilizados por diferentes módulos do projeto. |
+
+### Descrição dos arquivos principais
+
+| Arquivo | Descrição |
+|---|---|
+| `game/configuracoes.py` | Centraliza as configurações utilizadas pelo jogo, permitindo organizar parâmetros e definições gerais da aplicação. |
+| `game/motor.py` | Responsável pelo motor do jogo, concentrando funcionalidades relacionadas à execução e ao gerenciamento da lógica principal. |
+| `game/render.py` | Responsável pelos processos de renderização, organizando a apresentação visual dos elementos na tela. |
+| `.editorconfig` | Define padrões de configuração para editores de código, ajudando a manter a consistência de formatação entre os integrantes da equipe. |
+| `.gitignore` | Especifica arquivos e diretórios que devem ser ignorados pelo Git durante o versionamento do projeto. |
+| `main.py` | Arquivo principal e ponto de entrada da aplicação, responsável por iniciar a execução do jogo. |
+| `README.md` | Documento de apresentação e documentação do projeto, contendo informações sobre funcionalidades, estrutura, instalação e histórico de versões. |
+| `requirements.txt` | Lista as bibliotecas e dependências Python necessárias para a instalação e execução do projeto. |
+
+---
+
+## 🎮 Modos de jogo
+
+### 🏃 Endless Runner — Modo Clássico
+
+O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desviar de obstáculos e coletar moedas para aumentar sua pontuação e interagir com o sistema de perguntas.
+
+**Características:**
+
+- Movimentação e desvio de obstáculos.
+- Seleção de personagens relacionados a cursos universitários.
+- Coleta de moedas durante a partida.
+- Perguntas de múltipla escolha vinculadas às moedas coletadas.
+- Sistema de vidas associado ao desempenho nas perguntas.
+- Pontuação baseada no desempenho do jogador.
+- Power-ups que concedem habilidades especiais.
+
+### ⚔️ Rogue-Like
+
+O modo Rogue-Like apresenta uma experiência baseada em ondas de inimigos. O jogador precisa sobreviver aos confrontos e escolher melhorias para fortalecer seu personagem durante a progressão.
+
+**Características:**
+
+- Carregamento do personagem e da primeira horda de inimigos.
+- Combate por meio de disparos para derrotar os inimigos.
+- Progressão por ondas.
+- Disponibilização de três benefícios ao final de cada onda.
+- Escolha de apenas um benefício para continuar a partida.
+- Aumento progressivo da dificuldade e da quantidade de inimigos.
+- Encerramento da partida quando a vida do personagem chega a zero.
+- Exibição da última onda sobrevivida e retorno ao menu.
+
+---
+
+## ⚙️ Sistemas e funcionalidades
+
+### 👤 Sistema de usuários
+
+O jogo possui funcionalidades de cadastro e autenticação de jogadores, permitindo o acesso às funcionalidades disponíveis.
+
+### 🧑‍🎓 Sistema de personagens
+
+Os personagens representam diferentes cursos universitários, como Computação, Veterinária, Letras e História.
+
+O sistema permite selecionar um personagem antes de iniciar o modo Endless Runner. Também contempla a possibilidade de personagens bloqueados, que apresentam requisitos para desbloqueio.
+
+### ❓ Banco de questões
+
+O banco de questões disponibiliza perguntas utilizadas durante as partidas.
+
+Ao coletar uma moeda de pergunta, o sistema seleciona aleatoriamente uma questão do banco padrão associado ao personagem e apresenta suas alternativas para o jogador.
+
+### ❤️ Sistema de vidas e perguntas
+
+As respostas influenciam diretamente a condição do jogador durante a partida.
+
+No fluxo especificado para a coleta de moedas:
+
+- **Resposta correta:** recuperação de 50% da vida.
+- **Resposta incorreta:** redução de 50% da vida.
+- **Tempo esgotado:** encerramento da partida.
+
+O tempo disponível para responder cada pergunta é de **50 segundos**.
+
+### 🪙 Sistema de moedas
+
+As moedas de pergunta são coletadas durante a partida. Ao ocorrer a colisão com uma delas, o sistema abre uma pergunta com alternativas e temporizador.
+
+### ⚡ Power-ups
+
+Os power-ups são recursos especiais que concedem habilidades temporárias ao personagem.
+
+Entre os poderes descritos no projeto está o **Fantasma**, que permite ao personagem ficar intangível durante 5 segundos.
+
+### 🏆 Sistema de pontuação e ranking
+
+O sistema de pontuação considera o desempenho do jogador durante as partidas, incluindo os obstáculos desviados, as perguntas respondidas e os acertos.
+
+O projeto também contempla um ranking com as cinco melhores pontuações conquistadas pelo jogador.
+
+---
+
+## 🚀 Instalação e execução
+
+### Pré-requisitos
+
+- Python instalado.
+- Git instalado.
+- Gerenciador de pacotes pip.
+
+### 1. Clone o repositório
+
 ```bash
 git clone https://github.com/ArthurTeix/game-mind-rush.git
+```
+
+### 2. Acesse o diretório do projeto
+
+```bash
 cd game-mind-rush
 ```
 
-2. Instale as dependências:
+### 3. Instale as dependências
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Execute o jogo:
+### 4. Execute o jogo
+
 ```bash
 python main.py
 ```
 
-## 🚀 Release 1.0
+---
+
+## 📦 Histórico de versões e releases
+
+### 🚀 Release 1.0 — Versão inicial
+
+A primeira release estabeleceu a estrutura inicial do jogo e seus principais sistemas de navegação e gameplay.
 
 | Funcionalidade | Descrição |
 |---|---|
-| Menu / Navegação | Menu principal e navegação entre as funcionalidades do jogo. |
-| Cadastro de Jogador | Cadastro de novos jogadores no sistema. |
-| Login | Autenticação do jogador para acesso ao sistema. |
-| Sistema de Jogo | Execução da partida com movimentação e desvio de obstáculos. |
-| Sistema de Pontuação | Pontuação atribuída ao jogador ao esquivar dos obstáculos durante a partida. |
-| Ranking | Armazena as 5 melhores pontuações conquistadas pelo jogador. |
+| Menu e navegação | Menu principal e navegação entre as funcionalidades do jogo. |
+| Cadastro de jogador | Cadastro de novos jogadores. |
+| Login | Autenticação dos jogadores. |
+| Sistema de jogo | Movimentação do personagem e desvio de obstáculos. |
+| Sistema de pontuação | Atribuição de pontos ao desviar dos obstáculos. |
+| Ranking | Armazenamento das cinco melhores pontuações conquistadas pelo jogador. |
+
+### 🚀 Release 2.0 — Expansão da gameplay
+
+A segunda release ampliou as possibilidades de interação, adicionando sistemas educacionais, novos personagens e um novo modo de jogo.
+
+| Requisito | Funcionalidade | Descrição |
+|---|---|---|
+| RF006 | Seleção de personagens | Permite selecionar personagens relacionados aos cursos universitários antes de iniciar o Endless Runner. |
+| RF007 | Banco de questões padrão | Disponibiliza perguntas selecionadas aleatoriamente para utilização durante as partidas. |
+| RF009 | Power-ups | Permite obter habilidades especiais ao colidir com os respectivos objetos. |
+| RF010 | Moedas e perguntas | Abre perguntas com alternativas e temporizador de 50 segundos após a coleta de moedas. |
+| RF011 | Modo Rogue-Like | Introduz batalhas por ondas, combate contra inimigos e seleção de melhorias entre as ondas. |
+
+**Destaques da Release 2.0:**
+
+- Integração entre coleta de moedas e perguntas educacionais.
+- Recuperação e redução de vida conforme as respostas.
+- Implementação do Power-up Fantasma.
+- Introdução do modo Rogue-Like.
+- Progressão por ondas com seleção de benefícios.
+
+### 🚀 Release 3.0 — Melhorias e expansão educacional
+
+A terceira release está planejada para ampliar as funcionalidades de gerenciamento de usuários e introduzir uma nova experiência de aprendizagem personalizada.
+
+As funcionalidades abaixo estão planejadas e não devem ser consideradas implementadas.
+
+| Requisito | Funcionalidade | Descrição |
+|---|---|---|
+| RF012 | Alterar nome de usuário | Permite modificar o nome de usuário pelo perfil, verificando a disponibilidade do novo nome. |
+| RF013 | Alterar senha | Permite atualizar a senha do jogador por meio do perfil. |
+| RF014 | Apagar conta | Permite excluir permanentemente a conta do jogador mediante confirmação. |
+| RF015 | Modo Flashcard | Introduz um sistema de estudo personalizado com perguntas e respostas cadastradas pelo próprio jogador. |
+
+#### RF012 — Alteração de nome de usuário
+
+O jogador poderá acessar seu perfil e solicitar a alteração do nome de usuário. O sistema deverá verificar se o novo nome está disponível e validar os caracteres informados antes de salvar a alteração.
+
+#### RF013 — Alteração de senha
+
+O jogador poderá acessar a opção de edição de senha no perfil e informar uma nova senha. O sistema deverá validar a informação antes de atualizar os dados.
+
+#### RF014 — Exclusão de conta
+
+O sistema permitirá que o jogador solicite a exclusão permanente de sua conta. A operação deverá apresentar um aviso de irreversibilidade e solicitar confirmação antes de remover os dados.
+
+#### RF015 — Modo Flashcard
+
+O modo Flashcard pretende ampliar a experiência educacional do Mind Rush, permitindo que os jogadores utilizem perguntas personalizadas durante as partidas.
+
+O sistema deverá disponibilizar duas modalidades:
+
+- **Modo Clássico:** utiliza as perguntas padrão disponibilizadas pelo jogo, permitindo selecionar as opções de perguntas antes de iniciar a partida.
+- **Modo Flashcards:** permite criar e adicionar perguntas e respostas personalizadas, salvar o conteúdo e iniciar uma partida utilizando as questões cadastradas pelo próprio jogador.
 
 ---
 
-## 🚀 Release 2.0
+## 📊 Requisitos funcionais
 
-| Funcionalidade | Descrição |
+Os requisitos funcionais do projeto estão organizados por identificação:
+
+| Identificação | Requisito |
 |---|---|
-| Seleção de Personagens | Permite ao jogador a escolher um personagem referente a um curso em específico antes de começar o modo Endless Runner. |
-| Moeda de Pergunta | Permite ao jogador coletar moedas durante a partida e responder às perguntas. |
-| Perguntas e Respostas em Múltipla Escolha | Ao coletar a Moeda de Pergunta, o sistema exibe uma pergunta de uma área de conhecimento específica e o jogador precisa responder para avançar. Se o usuário acertar a resposta, ele ganha uma vida (respeitando o limite de 3 vidas), caso contrário ele perde uma vida. |
-| Banco de Questões | Armazena e disponibiliza questões utilizadas durante o jogo. |
-| Power-up: Fantasma | Adiciona um recurso especial que pode deixar o personagem intangível por 5 segundos durante a partida. |
-| Modo Rogue-Like | O jogador precisa enfrentar Ondas/Hordas. A cada fim de uma Onda, o usuário pode escolher um benefício para prosseguir no jogo. |
+| RF006 | Selecionar personagem |
+| RF007 | Banco de questões do jogo / padrão |
+| RF009 | Power-ups |
+| RF010 | Pegar moeda e exibir pergunta |
+| RF011 | Modo Rogue-Like |
+| RF012 | Trocar nome de usuário |
+| RF013 | Trocar senha |
+| RF014 | Apagar conta |
+| RF015 | Modo Flashcard |
 
 ---
 
-## Fluxogramas
-<a href="https://drive.google.com/file/d/1fE1Pq1ITFS5ljT3zZ30k4zELO8ufPyjS/view?usp=drive_link">Para acessar os fluxogramas, clique aqui.<a>
+## 📑 Documentação e fluxogramas
 
-Os Fluxogramas contidos no link acima mostra todos os tratamentos de Fluxo Principal, Alternativos e de Erros. Sendo Esses:
+Os fluxogramas do projeto documentam os fluxos principais, alternativos e de validação das funcionalidades do sistema, permitindo visualizar o comportamento esperado das operações e as interações entre jogador e aplicação.
 
-1. Menu e Seleção de Personagens;
-2. Jogo;
-3. Cadastro;
-4. Power-up;
-5. Login;
-6. Alterar Nome de Usuário/Senha;
-7. Apagar Conta;
-8. Banco de Questões;
-9. Modo Flashcard;
+**[📄 Acessar os fluxogramas do Mind Rush no Google Drive](https://drive.google.com/file/d/1fE1Pq1ITFS5ljT3zZ30k4zELO8ufPyjS/view?usp=drive_link)**
 
-## 👥 Integrantes
+Os fluxogramas contemplam:
 
-Arthur Teixeira - Desenvolvimento | Organização do Projeto | Design <br>
-Esthefany Vitória - Design | Desenvolvimento | Organização do Projeto <br>
-Richardson Barbosa - Organização do Projeto | Desenvolvimento do Artigo <br>
+1. Menu e seleção de personagens.
+2. Jogo.
+3. Cadastro.
+4. Power-ups.
+5. Login.
+6. Alteração de nome de usuário e senha.
+7. Exclusão de conta.
+8. Banco de questões.
+9. Modo Flashcard.
+
+---
+
+## 👥 Equipe de desenvolvimento
+
+| Integrante | Responsabilidades |
+|---|---|
+| Arthur Teixeira | Desenvolvimento, organização do projeto e design. |
+| Esthefany Vitória | Design, desenvolvimento e organização do projeto. |
+| Richardson Barbosa | Organização do projeto e desenvolvimento do artigo. |
+
+---
+
+## 📌 Considerações finais
+
+O Mind Rush busca integrar entretenimento e educação por meio de mecânicas de jogos digitais, proporcionando uma experiência de aprendizagem mais dinâmica e interativa.
+
+Com a evolução das releases, o projeto amplia seus sistemas de gameplay, adiciona novas possibilidades de progressão e pretende oferecer ferramentas de estudo personalizadas, fortalecendo sua proposta educacional.
