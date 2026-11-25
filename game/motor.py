@@ -157,6 +157,9 @@ class Motor:
             if self.estado == "endlessrun":
                  self.endless.eventos(evento)
 
+            if self.estado == "rogue":
+                 self.rogue.eventos(evento)
+
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if self.estado == "menu":
                     if botao_jogar.clicado(evento.pos):
@@ -202,11 +205,11 @@ class Motor:
                 if self.estado == "rogue":
                     self.rogue.eventos(evento)
 
-                elif self.estado == "gameover_rogue":
-                    if evento.type == pygame.KEYDOWN:
-                        if evento.key == pygame.K_r:
-                            self.rogue.iniciar_partida()
-                            self.estado = "rogue"
+            elif self.estado == "gameover_rogue":
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_r:
+                        self.rogue.iniciar_partida()
+                        self.estado = "rogue"
 
     def encerrar_jogo(self):
         self.rodando = False
