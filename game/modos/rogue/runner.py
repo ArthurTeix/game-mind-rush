@@ -16,7 +16,7 @@ class RogueLike:
 
         self.fonte_pequena = pygame.font.Font('./assets/fontes/aseprite.ttf', 20)
         self.fonte_media = pygame.font.Font('./assets/fontes/aseprite.ttf', 30)
-        self.fonte_grande = pygame.font.Font('./assets/fontes/aseprite.ttf', 72)
+        self.fonte_grande = pygame.font.Font('./assets/fontes/aseprite.ttf', 60)
 
         self.fundo = pygame.image.load("./assets/img/fundos/mapa_rogue.png").convert()
         self.fundo = pygame.transform.scale(self.fundo, self.limite.size)
@@ -130,35 +130,33 @@ class RogueLike:
  
     def desenhar_hud(self):
         
-        barra = pygame.Rect(1600, 20, 300, 24)
+        barra = pygame.Rect(1592, 20, 318, 34)
         proporcao = self.jogador.vida / self.jogador.vida_maxima
-        cor = (80, 200, 100) if proporcao > 0.5 else (230, 190, 50) if proporcao > 0.25 else (220, 60, 60)
+        cor = (153, 229, 80) if proporcao > 0.5 else (255, 213, 25) if proporcao > 0.25 else (172, 50, 50)
         pygame.draw.rect(self.tela, (40, 40, 50), barra)
         pygame.draw.rect(self.tela, cor, (barra.x, barra.y, round(barra.width * proporcao), barra.height))
-        pygame.draw.rect(self.tela, (230, 230, 230), barra, 2)
-        self.texto(f"HP {self.jogador.vida}/{self.jogador.vida_maxima}", (barra.x + 8, barra.y + 4), (20, 20, 20), fonte=self.fonte_pequena)
+        pygame.draw.rect(self.tela, (34, 32, 52), barra, 2)
+        self.texto(f"PV {self.jogador.vida}/{self.jogador.vida_maxima}", (barra.x + 8, barra.y + 7), (34, 32, 52), fonte=self.fonte_pequena)
  
-        self.texto(f"Pontos: {self.jogador.pontos}", (1600, 54), fonte=self.fonte_pequena)
+        self.texto(f"Pontos: {self.jogador.pontos}", (1594, 60), (255, 213, 25), fonte=self.fonte_pequena)
 
         if self.estado == "escolha":  
             return
  
         centro_x = self.limite.centerx
         if self.hordas.estado == "ativa":
-            self.texto(f"Horda {self.hordas.horda}", (centro_x, 40), fonte=self.fonte_grande, centro=True)
+            self.texto(f"Horda {self.hordas.horda}", (centro_x, 30), (172, 50, 50), fonte=self.fonte_media, centro=True)
         else:
             proxima = self.hordas.horda + 1
             segundos = max(0, math.ceil(self.hordas.tempo_pausa))
             if self.hordas.horda > 0:
-                self.texto(f"Horda {self.hordas.horda} vencida!", (centro_x, 40), (120, 230, 140),
-                           self.fonte_grande, centro=True)
-            self.texto(f"Horda {proxima} em {segundos}s", (centro_x, 90), fonte=self.fonte_pequena, centro=True)
+                self.texto(f"Horda {proxima} em {segundos}s", (centro_x, 50), fonte=self.fonte_media, centro=True)
 
     def desenhar_habilidades_obtidas(self):  
         for i, (id_habilidade, nivel) in enumerate(self.obtidas.items()):  
             nome = HABILIDADES_POR_ID[id_habilidade].nome  
             y = self.limite.bottom - 24 - 24 * (len(self.obtidas) - 1 - i)  
-            self.texto(f"{nome} x{nivel}", (20, y), (200, 200, 200), self.fonte_pequena)  
+            self.texto(f"{nome} x{nivel}", (20, y), (255, 213, 25), self.fonte_pequena)  
 
     def desenhar_escolha(self):  
         veu = pygame.Surface(self.limite.size, pygame.SRCALPHA)  

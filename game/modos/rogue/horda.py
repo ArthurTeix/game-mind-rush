@@ -34,8 +34,8 @@ class GerenciadorHordas:
 
         
         self.largura_barra = 800
-        self.altura_barra = 24
-        self.y_barra = 80
+        self.altura_barra = 20
+        self.y_barra = 58
 
     def dificuldade(self, n):
         """O que cresce a cada horda: quantidade, ritmo de surgimento e vilões na tela."""
@@ -166,14 +166,14 @@ class GerenciadorHordas:
         if largura_preenchida > 0:
             pygame.draw.rect(
                 tela,
-                (60, 200, 100),
+                (172, 50, 50),
                 (x, self.y_barra, largura_preenchida, self.altura_barra),
             )
 
         
         pygame.draw.rect(
             tela,
-            (255, 255, 255),
+            (34, 32, 52),
             (x, self.y_barra, self.largura_barra, self.altura_barra),
             width=2,
         )

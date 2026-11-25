@@ -29,7 +29,7 @@ class Jogador(pygame.sprite.Sprite):
         # tiro
         self.projeteis = projeteis
         self.limite = limite
-        self.intervalo_tiro = 0.25
+        self.intervalo_tiro = 0.35
         self.espera_tiro = 0.0
         self.dano_tiro = 1
         self.velocidade_tiro = Projetil.VELOCIDADE

@@ -266,7 +266,7 @@ class TelaConfig:
         return None
 
     def desenhar(self, tela, jogador):
-        tela.fill(cores['cinza-menu'])
+        tela.fill(cores['azul-jogo'])
         titulo = FONTE_MENSAGEM.render("Conta", True, cores['branco'])
         tela.blit(titulo, titulo.get_rect(center=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.15))))
         if jogador:
@@ -356,7 +356,7 @@ class _TelaFormulario:
         return None
 
     def desenhar(self, tela):
-        tela.fill(cores['cinza-menu'])
+        tela.fill(cores['azul-jogo'])
         titulo = FONTE_TITULO_TELA.render(self.TITULO, True, cores['branco'])
         tela.blit(titulo, titulo.get_rect(center=(LARGURA_TELA // 2, self.y_titulo)))
         for campo in self.campos:

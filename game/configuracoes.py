@@ -42,7 +42,7 @@ img_bg_rank = pygame.transform.scale(img_bg_rank, (LARGURA_TELA, ALTURA_TELA))
 CAMINHO_SAIR_RANKING = './assets/img/botoes/botoes_menu/sair_ranking.png'
 img_sair_rank = pygame.image.load(CAMINHO_SAIR_RANKING)
 img_sair_rank = pygame.transform.scale(img_sair_rank, (200, 200))
-rect_sair_rank = img_sair_rank.get_rect(topleft=(110, 20))
+rect_sair_rank = img_sair_rank.get_rect(topleft=(55, 20))
 
 # caminho da imagem de fundo do jogo
 CAMINHO_BG_JOGO = './assets/img/fundos/bg_jogo.png'
