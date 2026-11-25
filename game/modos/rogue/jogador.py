@@ -5,12 +5,12 @@ pygame.init()
 
 class Jogador(pygame.sprite.Sprite):
     VIDA_MAXIMA = 100
-    TEMPO_INVULNERAVEL = 1.0 
+    TEMPO_INVULNERAVEL = 1.0
     ESPALHAMENTO_TIRO = 14
- 
+
     def __init__(self, pos, grupos, projeteis, limite):
         super().__init__(grupos)
- 
+
         self.animacoes = self.carregar_animacoes()
         self.direcao_animacao = "baixo"
         self.quadro_atual = 0
@@ -20,12 +20,12 @@ class Jogador(pygame.sprite.Sprite):
         self.image = self.animacoes["baixo"][0]
 
         self.rect = self.image.get_rect(topleft=pos)
- 
+
         # movimentação
         self.posicao = pygame.Vector2(self.rect.topleft)
         self.direcao = pygame.Vector2()
         self.velocidade = 300
- 
+
         # tiro
         self.projeteis = projeteis
         self.limite = limite
@@ -35,7 +35,7 @@ class Jogador(pygame.sprite.Sprite):
         self.velocidade_tiro = Projetil.VELOCIDADE
 
         self.projeteis_por_tiro = 1
- 
+
         # vida
         self.vida_maxima = self.VIDA_MAXIMA
         self.vida = self.vida_maxima
@@ -48,7 +48,7 @@ class Jogador(pygame.sprite.Sprite):
 
         self.multiplicador_pontos = 1.0
         self.pontos = 0
- 
+
     def carregar_imagem(self):
         try:
             return pygame.image.load('./assets/img/personagens/generico/jogador_estatico.png').convert_alpha()
@@ -111,24 +111,24 @@ class Jogador(pygame.sprite.Sprite):
             ) % len(quadros)
 
         self.image = quadros[self.quadro_atual]
- 
+
     # ---- vida
- 
+
     @property
     def vivo(self):
         return self.vida > 0
- 
+
     def levar_dano(self, quantidade):
         """Devolve True se o golpe valeu (fora do tempo de invulnerabilidade)."""
         if self.invulnerabilidade > 0 or not self.vivo:
             return False
 
         dano_final = quantidade * self.multiplicador_dano
-        
+
         self.vida = max(0, self.vida - dano_final)
         self.invulnerabilidade = self.tempo_invulneravel
         return True
- 
+
     def curar(self, quantidade):
         if self.vivo:
             self.vida = min(self.vida_maxima, self.vida + quantidade)
@@ -144,16 +144,16 @@ class Jogador(pygame.sprite.Sprite):
         if cura > 0:
             self.curar(cura)
             self.acumulo_regeneracao -= cura
- 
+
     # ---- controles
- 
+
     def entrada(self):
         tecla = pygame.key.get_pressed()          # movimento: WASD
         self.direcao.x = int(tecla[pygame.K_d]) - int(tecla[pygame.K_a])
         self.direcao.y = int(tecla[pygame.K_s]) - int(tecla[pygame.K_w])
         if self.direcao.length_squared() > 0:
             self.direcao = self.direcao.normalize()
- 
+
     def atirar(self):
         tecla = pygame.key.get_pressed()          # tiro: setas
         alvo = pygame.Vector2(
@@ -164,13 +164,13 @@ class Jogador(pygame.sprite.Sprite):
             return
         Projetil(self.rect.center, alvo.normalize(), self.projeteis, self.limite)
         self.espera_tiro = self.intervalo_tiro
- 
+
     def movimentar(self, dt):
         self.posicao += self.direcao * self.velocidade * dt
         self.rect.topleft = (round(self.posicao.x), round(self.posicao.y))
         self.rect.clamp_ip(self.limite)               # não sai da tela
         self.posicao.update(self.rect.topleft)
- 
+
     def piscar(self):
         if self.invulnerabilidade > 0:
             if int(self.invulnerabilidade * 10) % 2 == 0:
@@ -182,11 +182,11 @@ class Jogador(pygame.sprite.Sprite):
 
     def adicionar_pontos(self, quantidade):
         self.pontos += quantidade
- 
+
     def update(self, dt):
         self.espera_tiro = max(0.0, self.espera_tiro - dt)
         self.invulnerabilidade = max(0.0, self.invulnerabilidade - dt)
-        
+
         if not self.vivo:
             return
 
