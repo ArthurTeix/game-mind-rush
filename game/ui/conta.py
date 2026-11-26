@@ -27,6 +27,8 @@ FONTE_CAMPO = pygame.font.SysFont('arial', 30)
 FONTE_MSG = pygame.font.SysFont('arial', 26)
 FONTE_PEQUENA = pygame.font.Font('./assets/fontes/aseprite.ttf', 20)
 FONTE_REGRA = pygame.font.SysFont('arial', 18)
+IMG_OK = "./assets/img/botoes/botoes_cadastro/botao_entrar.png"
+IMG_OK_HOVER = "./assets/img/botoes/botoes_cadastro/botao_entrar_hover.png"
 
 # helpers
 def _permitido_usuario(char):
@@ -233,10 +235,29 @@ class BotaoImagem(Botao):
     def __init__(self, centro, imagem_normal, imagem_hover=None):
         super().__init__(imagem_inicial=imagem_normal, centro=centro, imagem_hover=imagem_hover)
 
-# telas
+class BotaoTexto:
+    # botão retangular só com texto.
+ 
+    def __init__(self, texto, centro):
+        self.texto = texto
+        self.rect = pygame.Rect(0, 0, 320, 60)
+        self.rect.center = centro
+ 
+    def clicado(self, pos):
+        return self.rect.collidepoint(pos)
+ 
+    def desenhar(self, tela):
+        com_mouse = self.rect.collidepoint(pygame.mouse.get_pos())
+        if com_mouse:
+            pygame.draw.rect(tela, cores['branco'], self.rect, border_radius=12)
+        pygame.draw.rect(tela, cores['branco'], self.rect, 3, border_radius=12)
+        cor_texto = cores['azul-jogo'] if com_mouse else cores['branco']
+        surf = FONTE_MSG.render(self.texto, True, cor_texto)
+        tela.blit(surf, surf.get_rect(center=self.rect.center))
 
+# telas
 class TelaConfig:
-    """Menu de conta: entrar, cadastrar-se, sair da conta e voltar."""
+    """Menu de conta: entrar, cadastrar-se, alterar dados, excluir conta, sair e voltar."""
     def __init__(self):
         cx = LARGURA_TELA // 2
         self.y_inicial = int(ALTURA_TELA * 0.38)
@@ -244,18 +265,24 @@ class TelaConfig:
         self.botao_cadastro = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_cadastro.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_cadastro_hover.png")
         self.botao_logout = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_sair_da_conta.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_sair_da_conta_hover.png")
         self.botao_voltar = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_voltar.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_voltar_hover.png")
-
+        # novos (só texto, sem imagem)
+        self.botao_alterar = BotaoTexto("Alterar dados", (cx, 0))
+        self.botao_excluir = BotaoTexto("Excluir conta", (cx, 0))
+ 
     def _botoes_ativos(self, jogador):
         if jogador:
-            lista = [("logout", self.botao_logout), ("voltar", self.botao_voltar)]
+            lista = [("alterar", self.botao_alterar),
+                     ("excluir", self.botao_excluir),
+                     ("logout", self.botao_logout),
+                     ("voltar", self.botao_voltar)]
         else:
             lista = [("login", self.botao_login),
-                    ("cadastro", self.botao_cadastro),
-                    ("voltar", self.botao_voltar)]
+                     ("cadastro", self.botao_cadastro),
+                     ("voltar", self.botao_voltar)]
         for i, (_, botao) in enumerate(lista):
             botao.rect.centery = self.y_inicial + i * 80
         return lista
-
+ 
     def tratar_evento(self, evento, jogador):
         if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             return "voltar"
@@ -264,7 +291,7 @@ class TelaConfig:
                 if botao.clicado(evento.pos):
                     return acao
         return None
-
+ 
     def desenhar(self, tela, jogador):
         tela.fill(cores['azul-jogo'])
         titulo = FONTE_MENSAGEM.render("Conta", True, cores['branco'])
@@ -273,7 +300,8 @@ class TelaConfig:
             status = f"Conectado como {jogador['usuario']}"
         else:
             status = "Você ainda não está conectado"
-        surf = FONTE_MSG.render(status, True, cores['azul-jogo'])
+        # era azul sobre fundo azul (invisível); agora branco
+        surf = FONTE_MSG.render(status, True, cores['branco'])
         tela.blit(surf, surf.get_rect(center=(LARGURA_TELA // 2, int(ALTURA_TELA * 0.25))))
         for _, botao in self._botoes_ativos(jogador):
             botao.desenhar(tela)
@@ -425,9 +453,8 @@ class TelaCadastro(_TelaFormulario):
                         self.campo_nascimento]
         self._criar_rodape("./assets/img/botoes/botoes_cadastro/botao_cadastro.png", "./assets/img/botoes/botoes_cadastro/botao_cadastro_hover.png", altura_extra=ALTURA_REGRAS)
         self.usuario_criado = ""
-
+ 
     def enviar(self):
-        # ao tentar enviar, mostra as regras de todos os campos (inclusive os vazios)
         for campo in self.campos:
             campo.regras_forcadas = True
         usuario = self.campo_usuario.texto.strip()
@@ -460,3 +487,131 @@ class TelaCadastro(_TelaFormulario):
             return self._erro("Usuário ou e-mail já cadastrado. Tente outros dados.", self.campo_usuario)
         self.usuario_criado = usuario
         return "cadastrado"
+
+    TITULO = "Cadastro"
+    def __init__(self):
+        super().__init__()
+        passo = PASSO_CAMPO + ALTURA_REGRAS
+        espaco_formulario = ALTURA_CAMPO + 4 * passo + ALTURA_REGRAS     
+        altura_rodape = 14 + 95 + 28                                     
+        margem_inferior = 10
+        y0 = min(int(ALTURA_TELA * 0.19), ALTURA_TELA - margem_inferior - espaco_formulario - altura_rodape)
+        y0 = max(y0, 90)
+        self.y_titulo = min(int(ALTURA_TELA * 0.08), y0 - 62)
+        x = (LARGURA_TELA - LARGURA_CAMPO) // 2
+        self.campo_usuario = CampoTexto("Nome de usuário", x, y0,
+                                        max_len=16, permitido=_permitido_usuario,
+                                        regras=_regras_usuario_ao_vivo)
+        self.campo_email = CampoTexto("E-mail", x, y0 + passo,
+                                        max_len=60, permitido=_permitido_email,
+                                        regras=_regras_email_ao_vivo)
+        self.campo_senha = CampoTexto("Senha", x, y0 + 2 * passo, senha=True,
+                                        regras=validacao.regras_senha)
+        self.campo_repetir_senha = CampoTexto(
+            "Repetir Senha", x, y0 + 3 * passo, senha=True,
+            regras=lambda texto: validacao.regras_repetir_senha(
+                self.campo_senha.texto, texto
+            ),
+        )
+        self.campo_nascimento = CampoTexto("Data de nascimento", x, y0 + 4 * passo,
+                                            mascara_data=True, placeholder="DD/MM/AAAA",
+                                            regras=validacao.regras_data_nascimento)
+        self.campos = [self.campo_usuario, self.campo_email,
+                        self.campo_senha, self.campo_repetir_senha,
+                        self.campo_nascimento]
+        self._criar_rodape("./assets/img/botoes/botoes_cadastro/botao_cadastro.png", "./assets/img/botoes/botoes_cadastro/botao_cadastro_hover.png", altura_extra=ALTURA_REGRAS)
+        self.usuario_criado = ""
+
+    def enviar(self):
+        for campo in self.campos:
+            campo.regras_forcadas = True
+        usuario = self.campo_usuario.texto.strip()
+        email = self.campo_email.texto.strip()
+        senha = self.campo_senha.texto
+        repetir_senha = self.campo_repetir_senha.texto
+        nascimento = self.campo_nascimento.texto
+        erro = validacao.validar_usuario(usuario)
+        if erro:
+            return self._erro(erro, self.campo_usuario)
+        if db.usuario_existe(usuario):
+            return self._erro("Nome de usuário já existe. Escolha outro.", self.campo_usuario)
+        erro = validacao.validar_email(email)
+        if erro:
+            return self._erro(erro, self.campo_email)
+        if db.email_existe(email):
+            return self._erro("E-mail já cadastrado. Tente entrar com a sua conta.", self.campo_email)
+        erro = validacao.validar_senha(senha)
+        if erro:
+            return self._erro(erro, self.campo_senha)
+        erro = validacao.validar_repetir_senha(senha, repetir_senha)
+        if erro:
+            return self._erro(erro, self.campo_repetir_senha)
+        erro, nascimento_iso = validacao.validar_data_nascimento(nascimento)
+        if erro:
+            return self._erro(erro, self.campo_nascimento)
+        try:
+            db.inserir_jogador(usuario, email, senha, nascimento_iso)
+        except sqlite3.IntegrityError:
+            return self._erro("Usuário ou e-mail já cadastrado. Tente outros dados.", self.campo_usuario)
+        self.usuario_criado = usuario
+        return "cadastrado"
+
+class TelaAlterar(_TelaFormulario):
+    TITULO = "Alterar dados"
+ 
+    def __init__(self, jogador):
+        super().__init__()
+        self.jogador = jogador
+        x = (LARGURA_TELA - LARGURA_CAMPO) // 2
+        y0 = int(ALTURA_TELA * 0.30)
+        self.campo_usuario = CampoTexto("Novo nome de usuário", x, y0,
+                                        max_len=16, permitido=_permitido_usuario)
+        self.campo_atual = CampoTexto("Senha atual (para trocar a senha)",
+                                      x, y0 + PASSO_CAMPO, senha=True)
+        self.campo_nova = CampoTexto("Nova senha", x, y0 + 2 * PASSO_CAMPO, senha=True)
+        self.campos = [self.campo_usuario, self.campo_atual, self.campo_nova]
+        self._criar_rodape(IMG_OK, IMG_OK_HOVER)
+        self._focar(0)
+ 
+    def enviar(self):
+        novo_usuario = self.campo_usuario.texto.strip()
+        senha_atual = self.campo_atual.texto
+        nova_senha = self.campo_nova.texto
+        if not novo_usuario and not nova_senha:
+            return self._erro("Preencha o que deseja alterar.")
+ 
+        jid = self.jogador["id"]
+        if novo_usuario:
+            erro = db.alterar_usuario(jid, novo_usuario)
+            if erro:
+                return self._erro(erro, self.campo_usuario)
+
+            self.jogador["usuario"] = novo_usuario
+        if nova_senha:
+            erro = db.alterar_senha(jid, senha_atual, nova_senha)
+            if erro:
+                return self._erro(erro, self.campo_atual)
+        return "alterado"
+ 
+ 
+class TelaExcluir(_TelaFormulario):
+    TITULO = "Excluir conta"
+ 
+    def __init__(self, jogador):
+        super().__init__()
+        self.jogador = jogador
+        x = (LARGURA_TELA - LARGURA_CAMPO) // 2
+        self.campo_senha = CampoTexto("Digite sua senha para excluir", x,
+                                      int(ALTURA_TELA * 0.30), senha=True)
+        self.campos = [self.campo_senha]
+        self._criar_rodape(IMG_OK, IMG_OK_HOVER)
+        self._focar(0)
+ 
+    def enviar(self):
+        senha = self.campo_senha.texto
+        if not senha:
+            return self._erro("Digite a senha para confirmar.")
+        erro = db.excluir_conta(self.jogador["id"], senha)
+        if erro:
+            return self._erro(erro, self.campo_senha)
+        return "excluida"
