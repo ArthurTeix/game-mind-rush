@@ -33,7 +33,6 @@ Mind-Rush/
 │
 ├── game/
 │   ├── database/
-│   ├── elements/
 │   ├── modos/
 │   │   ├── endless/
 │   │   └── rogue/
