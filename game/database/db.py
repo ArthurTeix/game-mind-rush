@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import os
 from contextlib import closing
+from game.util.validacao import validar_usuario, validar_senha
 
 CAMINHO_DB = './game/database/banco.db'
 ITERACOES_HASH = 200_000
@@ -115,3 +116,61 @@ def get_top5_pontuacao(jogador_id):
         ).fetchall()
 
     return [linha[0] for linha in linhas]
+
+
+def _senha_confere(jogador_id, senha):
+    with closing(_conectar()) as conn:
+        linha = conn.execute(
+            "SELECT senha_hash, salt FROM jogadores WHERE id = ?", (jogador_id,)
+        ).fetchone()
+
+    if linha is None:
+        return False
+
+    senha_hash, salt_hex = linha
+    hash_calculado = _gerar_hash(senha, bytes.fromhex(salt_hex))
+    return hmac.compare_digest(hash_calculado, senha_hash)
+
+
+def alterar_usuario(jogador_id, novo_usuario):
+    erro = validar_usuario(novo_usuario)
+    if erro:
+        return erro
+
+    try:
+        with closing(_conectar()) as conn, conn:
+            conn.execute(
+                "UPDATE jogadores SET usuario = ? WHERE id = ?",
+                (novo_usuario, jogador_id)
+            )
+    except sqlite3.IntegrityError:
+        # a coluna usuario é única pois o próprio banco recusa nomes repetidos
+        return "Esse nome de usuário já está em uso."
+    return None
+
+
+def alterar_senha(jogador_id, senha_atual, nova_senha):
+    if not _senha_confere(jogador_id, senha_atual):
+        return "Senha atual incorreta."
+
+    erro = validar_senha(nova_senha)
+    if erro:
+        return erro
+
+    salt = os.urandom(16)          # novo salt a cada troca
+    with closing(_conectar()) as conn, conn:
+        conn.execute(
+            "UPDATE jogadores SET senha_hash = ?, salt = ? WHERE id = ?",
+            (_gerar_hash(nova_senha, salt), salt.hex(), jogador_id)
+        )
+    return None
+
+
+def excluir_conta(jogador_id, senha):
+    if not _senha_confere(jogador_id, senha):
+        return "Senha incorreta."
+
+    with closing(_conectar()) as conn, conn:
+        conn.execute("DELETE FROM partidas WHERE jogador_id = ?", (jogador_id,))
+        conn.execute("DELETE FROM jogadores WHERE id = ?", (jogador_id,))
+    return None
