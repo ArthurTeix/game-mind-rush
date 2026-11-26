@@ -26,7 +26,7 @@ class Personagem:
         self.pos_y = float(y)
         self.bottom_anterior = self.rect.bottom
         self.velocidade_y = 0
-        self.gravidade = 1
+        self.gravidade = 13
         self.forca_salto = -20
 
         # --- mergulho rápido (estilo Subway Surfers) ---
