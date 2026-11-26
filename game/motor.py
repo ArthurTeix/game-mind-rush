@@ -6,12 +6,12 @@ from game.configuracoes import LARGURA_TELA, ALTURA_TELA, TITULO_JOGO, FULLSCREE
 from game.database.db import criar_tabelas, get_top5_pontuacao
 from game.render import desenhar_menu, desenhar_gameover_endless, desenhar_ranking, desenhar_modos, rect_sair_rank
 from game.ui.botao import botao_jogar, botao_conta, botao_ranking, botao_sair, botao_reiniciar_endless, botao_sair_gameover_endless, botao_menu_endless, botao_modo1, botao_modo2
-from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro
+from game.ui.conta import TelaConfig, TelaLogin, TelaCadastro, TelaAlterar, TelaExcluir  
 from game.render import img_gameover_endless, msg_gameover_endless
 from game.modos.endless.runner import EndlessRunner
 from game.modos.rogue.runner import RogueLike
 
-ESTADOS_CONTA = ("conta", "login", "cadastro")
+ESTADOS_CONTA = ("conta", "login", "cadastro", "alterar", "excluir")
 
 class Motor:
     def __init__(self):
@@ -29,16 +29,17 @@ class Motor:
         self.top5 = []
         self.estado = "menu"
 
-        # jogador logado: None ou {"id": ..., "usuario": ...}
         self.jogador = None
         self.endless = EndlessRunner()
         self.rogue = RogueLike(self.tela)
-        self.origem_login = "menu"   # para onde o botão "Voltar" do login leva
+        self.origem_login = "menu"   
 
         # telas de conta
         self.tela_config = TelaConfig()
         self.tela_login = TelaLogin()
         self.tela_cadastro = TelaCadastro()
+        self.tela_alterar = None
+        self.tela_excluir = None
 
     @property
     def logado(self):
@@ -72,6 +73,12 @@ class Motor:
 
             elif self.estado == "cadastro":
                 self.tela_cadastro.desenhar(self.tela)
+
+            elif self.estado == "alterar":
+                self.tela_alterar.desenhar(self.tela)
+
+            elif self.estado == "excluir":
+                self.tela_excluir.desenhar(self.tela)
 
             elif self.estado == "endlessrun":
                
@@ -107,8 +114,18 @@ class Motor:
         self.tela_cadastro.resetar()
         self.estado = "cadastro"
 
+    def abrir_alterar(self):
+        """Cria uma tela de alteração limpa para o jogador logado e abre."""
+        self.tela_alterar = TelaAlterar(self.jogador)
+        self.estado = "alterar"
+
+    def abrir_excluir(self):
+        """Cria uma tela de exclusão limpa para o jogador logado e abre."""
+        self.tela_excluir = TelaExcluir(self.jogador)
+        self.estado = "excluir"
+
     def tratar_evento_conta(self, evento):
-        """Eventos das telas de configuração, login e cadastro."""
+        """Eventos das telas de configuração, login, cadastro, alteração e exclusão."""
         if self.estado == "conta":
             acao = self.tela_config.tratar_evento(evento, self.jogador)
 
@@ -116,6 +133,10 @@ class Motor:
                 self.abrir_login(origem="conta")
             elif acao == "cadastro":
                 self.abrir_cadastro()
+            elif acao == "alterar":          
+                self.abrir_alterar()
+            elif acao == "excluir":          
+                self.abrir_excluir()
             elif acao == "logout":
                 self.jogador = None
             elif acao == "voltar":
@@ -135,9 +156,23 @@ class Motor:
 
             if acao == "cadastrado":
                 self.abrir_login("Conta criada com sucesso!", origem="conta", sucesso=True)
-                # já preenche o usuário e deixa o cursor na senha
                 self.tela_login.campo_usuario.texto = self.tela_cadastro.usuario_criado
                 self.tela_login.focar_campo(self.tela_login.campo_senha)
+            elif acao == "voltar":
+                self.estado = "conta"
+
+        elif self.estado == "alterar":
+            acao = self.tela_alterar.tratar_evento(evento)
+
+            if acao in ("alterado", "voltar"):
+                self.estado = "conta"
+
+        elif self.estado == "excluir":
+            acao = self.tela_excluir.tratar_evento(evento)
+
+            if acao == "excluida":
+                self.jogador = None          
+                self.estado = "menu"
             elif acao == "voltar":
                 self.estado = "conta"
 
@@ -146,7 +181,6 @@ class Motor:
             if evento.type == pygame.QUIT:
                 self.encerrar_jogo()
 
-            # nas telas de conta, o ESC volta uma tela em vez de fechar o jogo
             if self.estado in ESTADOS_CONTA:
                 self.tratar_evento_conta(evento)
                 continue
