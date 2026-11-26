@@ -85,7 +85,7 @@ Mind-Rush/
 
 ### 🏃 Endless Runner — Modo Clássico
 
-O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desviar de obstáculos e coletar moedas para aumentar sua pontuação e interagir com o sistema de perguntas (Utilizando W ou ⬆️ para pular e S ou ⬇️ para descer).
+O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desviar de obstáculos e coletar moedas para aumentar sua pontuação e interagir com o sistema de perguntas (Utilizando as teclas W ou ⬆️ para pular e S ou ⬇️ para descer).
 
 **Características:**
 
@@ -100,7 +100,7 @@ O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desvi
 
 ### ⚔️ Rogue-Like
 
-O modo Rogue-Like apresenta uma experiência baseada em ondas (hordas) de inimigos. O jogador precisa sobreviver aos confrontos e escolher melhorias para fortalecer seu personagem durante a progressão.
+O modo Rogue-Like apresenta uma experiência baseada em ondas (hordas) de inimigos. O jogador precisa sobreviver aos confrontos e escolher melhorias para fortalecer seu personagem durante a progressão (Utilizando as teclas W, S, D e A para movimentação e ⬆️, ⬇️, ➡️ e ⬅️ para disparar projéteis).
 
 **Características:**
 
