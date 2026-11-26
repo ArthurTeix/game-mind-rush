@@ -237,15 +237,15 @@ class BotaoImagem(Botao):
 
 class BotaoTexto:
     # botão retangular só com texto.
- 
+
     def __init__(self, texto, centro):
         self.texto = texto
         self.rect = pygame.Rect(0, 0, 320, 60)
         self.rect.center = centro
- 
+
     def clicado(self, pos):
         return self.rect.collidepoint(pos)
- 
+
     def desenhar(self, tela):
         com_mouse = self.rect.collidepoint(pygame.mouse.get_pos())
         if com_mouse:
@@ -266,9 +266,9 @@ class TelaConfig:
         self.botao_logout = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_sair_da_conta.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_sair_da_conta_hover.png")
         self.botao_voltar = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_voltar.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_voltar_hover.png")
         # novos (só texto, sem imagem)
-        self.botao_alterar = BotaoTexto("Alterar dados", (cx, 0))
-        self.botao_excluir = BotaoTexto("Excluir conta", (cx, 0))
- 
+        self.botao_alterar = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_alterar_dados.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_alterar_dados_hover.png")
+        self.botao_excluir = BotaoImagem(centro=(cx, 0), imagem_normal="./assets/img/botoes/botoes_cadastro/botao_excluir_conta.png", imagem_hover="./assets/img/botoes/botoes_cadastro/botao_excluir_conta_hover.png")
+
     def _botoes_ativos(self, jogador):
         if jogador:
             lista = [("alterar", self.botao_alterar),
@@ -282,7 +282,7 @@ class TelaConfig:
         for i, (_, botao) in enumerate(lista):
             botao.rect.centery = self.y_inicial + i * 80
         return lista
- 
+
     def tratar_evento(self, evento, jogador):
         if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             return "voltar"
@@ -291,7 +291,7 @@ class TelaConfig:
                 if botao.clicado(evento.pos):
                     return acao
         return None
- 
+
     def desenhar(self, tela, jogador):
         tela.fill(cores['azul-jogo'])
         titulo = FONTE_MENSAGEM.render("Conta", True, cores['branco'])
@@ -453,7 +453,7 @@ class TelaCadastro(_TelaFormulario):
                         self.campo_nascimento]
         self._criar_rodape("./assets/img/botoes/botoes_cadastro/botao_cadastro.png", "./assets/img/botoes/botoes_cadastro/botao_cadastro_hover.png", altura_extra=ALTURA_REGRAS)
         self.usuario_criado = ""
- 
+
     def enviar(self):
         for campo in self.campos:
             campo.regras_forcadas = True
@@ -492,8 +492,8 @@ class TelaCadastro(_TelaFormulario):
     def __init__(self):
         super().__init__()
         passo = PASSO_CAMPO + ALTURA_REGRAS
-        espaco_formulario = ALTURA_CAMPO + 4 * passo + ALTURA_REGRAS     
-        altura_rodape = 14 + 95 + 28                                     
+        espaco_formulario = ALTURA_CAMPO + 4 * passo + ALTURA_REGRAS
+        altura_rodape = 14 + 95 + 28
         margem_inferior = 10
         y0 = min(int(ALTURA_TELA * 0.19), ALTURA_TELA - margem_inferior - espaco_formulario - altura_rodape)
         y0 = max(y0, 90)
@@ -558,7 +558,7 @@ class TelaCadastro(_TelaFormulario):
 
 class TelaAlterar(_TelaFormulario):
     TITULO = "Alterar dados"
- 
+
     def __init__(self, jogador):
         super().__init__()
         self.jogador = jogador
@@ -572,14 +572,14 @@ class TelaAlterar(_TelaFormulario):
         self.campos = [self.campo_usuario, self.campo_atual, self.campo_nova]
         self._criar_rodape(IMG_OK, IMG_OK_HOVER)
         self._focar(0)
- 
+
     def enviar(self):
         novo_usuario = self.campo_usuario.texto.strip()
         senha_atual = self.campo_atual.texto
         nova_senha = self.campo_nova.texto
         if not novo_usuario and not nova_senha:
             return self._erro("Preencha o que deseja alterar.")
- 
+
         jid = self.jogador["id"]
         if novo_usuario:
             erro = db.alterar_usuario(jid, novo_usuario)
@@ -592,11 +592,11 @@ class TelaAlterar(_TelaFormulario):
             if erro:
                 return self._erro(erro, self.campo_atual)
         return "alterado"
- 
- 
+
+
 class TelaExcluir(_TelaFormulario):
     TITULO = "Excluir conta"
- 
+
     def __init__(self, jogador):
         super().__init__()
         self.jogador = jogador
@@ -606,7 +606,7 @@ class TelaExcluir(_TelaFormulario):
         self.campos = [self.campo_senha]
         self._criar_rodape(IMG_OK, IMG_OK_HOVER)
         self._focar(0)
- 
+
     def enviar(self):
         senha = self.campo_senha.texto
         if not senha:
