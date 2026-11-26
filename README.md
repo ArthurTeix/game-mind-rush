@@ -1,16 +1,14 @@
 # 🧠 Mind Rush
 
-**Mind Rush** é um jogo educacional desenvolvido como projeto interdisciplinar da **Universidade Federal Rural de Pernambuco (UFRPE)**. Seu objetivo é transformar o estudo e a revisão de conteúdos acadêmicos em uma experiência dinâmica e interativa, combinando elementos de jogos de ação, progressão e aprendizagem.
+**Mind Rush** é um jogo educacional desenvolvido como projeto das matérias de "Projeto Interdisciplinar de Sistemas de Informação" e "Princípios de Programação" da **Universidade Federal Rural de Pernambuco (UFRPE)**. Seu objetivo é transformar o conhecimento, estudo e a revisão de conteúdos acadêmicos em uma experiência dinâmica e interativa, combinando elementos de jogos de ação, progressão e aprendizagem.
 
-O jogo combina os gêneros **Endless Runner** e **Rogue-Like**, permitindo que os jogadores enfrentem obstáculos, coletem moedas, respondam perguntas e enfrentem hordas de inimigos. Cada personagem representa um curso universitário, relacionando a experiência de jogo a diferentes áreas do conhecimento.
-
-Além disso, o projeto prevê um modo de estudo personalizado, no qual os próprios jogadores poderão cadastrar perguntas e respostas para utilizar durante as partidas.
+O jogo combina os gêneros **Endless Runner** e **Rogue-Like**, permitindo que os jogadores enfrentem obstáculos, coletem moedas, respondam perguntas e enfrentem hordas de inimigos. Cada personagem representa um curso universitário, relacionando a experiência de jogo a diferentes áreas do conhecimento (e um personagem temático em homenagem ao professor que ministra as cadeiras).
 
 ---
 
 ## 🎯 Público-alvo
 
-Estudantes em geral e aspirantes a universitários que buscam uma maneira mais dinâmica, acessível e divertida de estudar e revisar conteúdos acadêmicos.
+Estudantes em geral e aspirantes a universitários que buscam uma maneira mais dinâmica, acessível e divertida de  conhecer, estudar, revisar conteúdos acadêmicos.
 
 ---
 
@@ -87,7 +85,7 @@ Mind-Rush/
 
 ### 🏃 Endless Runner — Modo Clássico
 
-O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desviar de obstáculos e coletar moedas para aumentar sua pontuação e interagir com o sistema de perguntas.
+O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desviar de obstáculos e coletar moedas para aumentar sua pontuação e interagir com o sistema de perguntas (Utilizando W ou ⬆️ para pular e S ou ⬇️ para descer).
 
 **Características:**
 
@@ -98,10 +96,11 @@ O Endless Runner é o modo de corrida contínua, no qual o jogador precisa desvi
 - Sistema de vidas associado ao desempenho nas perguntas.
 - Pontuação baseada no desempenho do jogador.
 - Power-ups que concedem habilidades especiais.
+- Sistema de Ranking baseado nas melhores pontuações.
 
 ### ⚔️ Rogue-Like
 
-O modo Rogue-Like apresenta uma experiência baseada em ondas de inimigos. O jogador precisa sobreviver aos confrontos e escolher melhorias para fortalecer seu personagem durante a progressão.
+O modo Rogue-Like apresenta uma experiência baseada em ondas (hordas) de inimigos. O jogador precisa sobreviver aos confrontos e escolher melhorias para fortalecer seu personagem durante a progressão.
 
 **Características:**
 
@@ -124,9 +123,9 @@ O jogo possui funcionalidades de cadastro e autenticação de jogadores, permiti
 
 ### 🧑‍🎓 Sistema de personagens
 
-Os personagens representam diferentes cursos universitários, como Computação, Veterinária, Letras e História.
+Os personagens representam diferentes cursos universitários, como Computação, Ciência do Consumo, Letras e História.
 
-O sistema permite selecionar um personagem antes de iniciar o modo Endless Runner. Também contempla a possibilidade de personagens bloqueados, que apresentam requisitos para desbloqueio.
+O sistema permite selecionar um personagem antes de iniciar o modo Endless Runner. Também contempla a possibilidade de personagens bloqueados, que apresentam requisitos para desbloqueio (Login).
 
 ### ❓ Banco de questões
 
@@ -140,25 +139,22 @@ As respostas influenciam diretamente a condição do jogador durante a partida.
 
 No fluxo especificado para a coleta de moedas:
 
-- **Resposta correta:** recuperação de 50% da vida.
-- **Resposta incorreta:** redução de 50% da vida.
-- **Tempo esgotado:** encerramento da partida.
-
-O tempo disponível para responder cada pergunta é de **50 segundos**.
+- **Resposta correta:** recuperação de 1 coração de vida.
+- **Resposta incorreta:** redução de 1 coração de vida.
 
 ### 🪙 Sistema de moedas
 
-As moedas de pergunta são coletadas durante a partida. Ao ocorrer a colisão com uma delas, o sistema abre uma pergunta com alternativas e temporizador.
+As moedas de pergunta são coletadas durante a partida. Ao ocorrer a colisão com uma delas, o sistema abre uma pergunta com alternativas.
 
 ### ⚡ Power-ups
 
 Os power-ups são recursos especiais que concedem habilidades temporárias ao personagem.
 
-Entre os poderes descritos no projeto está o **Fantasma**, que permite ao personagem ficar intangível durante 5 segundos.
+Entre os poderes descritos no projeto está o **Fantasma**, que permite ao personagem ficar intangível durante 5 segundos contra obstáculos.
 
 ### 🏆 Sistema de pontuação e ranking
 
-O sistema de pontuação considera o desempenho do jogador durante as partidas, incluindo os obstáculos desviados, as perguntas respondidas e os acertos.
+O sistema de pontuação considera o desempenho do jogador durante as partidas, incluindo os obstáculos desviados.
 
 O projeto também contempla um ranking com as cinco melhores pontuações conquistadas pelo jogador.
 
@@ -245,27 +241,7 @@ As funcionalidades abaixo estão planejadas e não devem ser consideradas implem
 | RF013 | Alterar senha | Permite atualizar a senha do jogador por meio do perfil. |
 | RF014 | Apagar conta | Permite excluir permanentemente a conta do jogador mediante confirmação. |
 | RF015 | Modo Flashcard | Introduz um sistema de estudo personalizado com perguntas e respostas cadastradas pelo próprio jogador. |
-
-#### RF012 — Alteração de nome de usuário
-
-O jogador poderá acessar seu perfil e solicitar a alteração do nome de usuário. O sistema deverá verificar se o novo nome está disponível e validar os caracteres informados antes de salvar a alteração.
-
-#### RF013 — Alteração de senha
-
-O jogador poderá acessar a opção de edição de senha no perfil e informar uma nova senha. O sistema deverá validar a informação antes de atualizar os dados.
-
-#### RF014 — Exclusão de conta
-
-O sistema permitirá que o jogador solicite a exclusão permanente de sua conta. A operação deverá apresentar um aviso de irreversibilidade e solicitar confirmação antes de remover os dados.
-
-#### RF015 — Modo Flashcard
-
-O modo Flashcard pretende ampliar a experiência educacional do Mind Rush, permitindo que os jogadores utilizem perguntas personalizadas durante as partidas.
-
-O sistema deverá disponibilizar duas modalidades:
-
-- **Modo Clássico:** utiliza as perguntas padrão disponibilizadas pelo jogo, permitindo selecionar as opções de perguntas antes de iniciar a partida.
-- **Modo Flashcards:** permite criar e adicionar perguntas e respostas personalizadas, salvar o conteúdo e iniciar uma partida utilizando as questões cadastradas pelo próprio jogador.
+| RF016 | Tesouros no Rogue | Introduz um sistema de prêmios no modo rogue-like. |
 
 ---
 
@@ -311,14 +287,6 @@ Os fluxogramas contemplam:
 
 | Integrante | Responsabilidades |
 |---|---|
-| Arthur Teixeira | Desenvolvimento, organização do projeto e design. |
-| Esthefany Vitória | Design, desenvolvimento e organização do projeto. |
-| Richardson Barbosa | Organização do projeto e desenvolvimento do artigo. |
-
----
-
-## 📌 Considerações finais
-
-O Mind Rush busca integrar entretenimento e educação por meio de mecânicas de jogos digitais, proporcionando uma experiência de aprendizagem mais dinâmica e interativa.
-
-Com a evolução das releases, o projeto amplia seus sistemas de gameplay, adiciona novas possibilidades de progressão e pretende oferecer ferramentas de estudo personalizadas, fortalecendo sua proposta educacional.
+| Arthur Teixeira | Desenvolvimento do jogo, organização do projeto, desenvolvimento do artigo e design. |
+| Esthefany Vitória | Design, desenvolvimento do jogo, desenvolvimento do artigo e organização do projeto. |
+| Richardson Barbosa | Organização do projeto, desenvolvimento do artigo e desenvolvimento do jogo. |
